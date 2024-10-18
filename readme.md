@@ -12,16 +12,21 @@ Note: If you're not familiar with Everdell, I recommend visiting BoardGameGeek [
 
 ## Technologies & Tools
 
-Nothing fancy here: HTML, CSS, JavaScript and a json file to store Everdell's cards information.
+Nothing fancy here:
+
+- [x] HTML
+- [x] CSS
+- [x] JavaScript
+- [x] Json object parsed from CSV file with Python
 
 Here are the tools I used:
- - [x] [Visual Studio Code](https://code.visualstudio.com/)
- - [x] GitHub (you are there already!)
+ - [Visual Studio Code](https://code.visualstudio.com/)
+ - GitHub (you are there already!)
 
 ## References
 
 While working on this project, I used and consulted the websites and references below:
- - [x] Everdell Rules of play
- - [x] BoardGameGeek user Narf Bro [Everdell Tier List of Cards](https://boardgamegeek.com/thread/2486042/everdell-tier-list-of-cards-player-powers-adornmen) from which I gathered data to create a json object with all cards of the base game.
- - [x] Codecademy [Full-Stack Engineer Career Path](https://www.codecademy.com/career-journey/full-stack-engineer) until the first lessons of React.
- - [x] [ChatGPT](https://chat.openai.com/): a great companion for self-learners! (And no, I didn't use it to write my code. That would be totally pointless in regards of my objective of coding skills development.)
+ - Everdell Rules of play
+ - BoardGameGeek user Narf Bro [Everdell Tier List of Cards](https://boardgamegeek.com/thread/2486042/everdell-tier-list-of-cards-player-powers-adornmen) from which I gathered data to create a json object with all cards of the base game.
+ - Codecademy [Full-Stack Engineer Career Path](https://www.codecademy.com/career-journey/full-stack-engineer) until the first lessons of React.
+ - [ChatGPT](https://chat.openai.com/): a great companion for self-learners! (And no, I didn't use it to write my code. That would be totally pointless in regards of my objective of coding skills development.)
