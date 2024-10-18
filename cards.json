@@ -1,0 +1,608 @@
+{
+    "crane": {
+        "value": 1,
+        "count": 3,
+        "category": "governance",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "pebble": 1
+        },
+        "produces": "architect",
+        "effect": "Reduce the cost of a construction by 3"
+    },
+    "innkeeper": {
+        "value": 1,
+        "count": 3,
+        "category": "governance",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 1
+        },
+        "produces": "",
+        "effect": "Play critter for 3B less"
+    },
+    "evertree": {
+        "value": 5,
+        "count": 2,
+        "category": "prosperity",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 3,
+            "resin": 3,
+            "pebble": 3
+        },
+        "produces": "any",
+        "effect": "1 Point / Prosperity Card"
+    },
+    "castle": {
+        "value": 4,
+        "count": 2,
+        "category": "prosperity",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 2,
+            "resin": 3,
+            "pebble": 3
+        },
+        "produces": "king",
+        "effect": "1 Point / Common Construction"
+    },
+    "palace": {
+        "value": 4,
+        "count": 2,
+        "category": "prosperity",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 2,
+            "resin": 3,
+            "pebble": 3
+        },
+        "produces": "queen",
+        "effect": "1 Point / Unique Construction"
+    },
+    "courthouse": {
+        "value": 2,
+        "count": 2,
+        "category": "governance",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 1,
+            "resin": 1,
+            "pebble": 2
+        },
+        "produces": "judge",
+        "effect": "Gain 1T or 1R or 1P after playing a construction"
+    },
+    "shopkeeper": {
+        "value": 1,
+        "count": 3,
+        "category": "governance",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "1B after any critter played"
+    },
+    "historian": {
+        "value": 1,
+        "count": 3,
+        "category": "governance",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Draw 1 card when another card is played"
+    },
+    "doctor": {
+        "value": 4,
+        "count": 2,
+        "category": "production",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 4
+        },
+        "produces": "",
+        "effect": "1 pt / B paid (3 max)"
+    },
+    "miner mole": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "Activate 1 production in opponent's city (for yourself)"
+    },
+    "theatre": {
+        "value": 3,
+        "count": 2,
+        "category": "prosperity",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 3,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "bard",
+        "effect": "1 Point / Unique Critter"
+    },
+    "school": {
+        "value": 2,
+        "count": 2,
+        "category": "prosperity",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 2,
+            "resin": 2
+        },
+        "produces": "teacher",
+        "effect": "1 Point / Common Critter"
+    },
+    "king": {
+        "value": 4,
+        "count": 2,
+        "category": "prosperity",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 6
+        },
+        "produces": "",
+        "effect": "1 pt / basic event, 2 pt / special event"
+    },
+    "clock tower": {
+        "value": 0,
+        "count": 3,
+        "category": "governance",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 3,
+            "pebble": 1
+        },
+        "produces": "historian",
+        "effect": "Gain 3 pt, optionally spend at EOS to activate worker deployed at Basic / Forest Location"
+    },
+    "chip sweep": {
+        "value": 2,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "Activate 1 production in your city"
+    },
+    "inn": {
+        "value": 2,
+        "count": 3,
+        "category": "destination",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 2,
+            "resin": 1
+        },
+        "produces": "innkeeper",
+        "effect": "Play meadow card for 3 less resources"
+    },
+    "mine": {
+        "value": 2,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 1,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "miner mole",
+        "effect": "Gain 1P"
+    },
+    "university": {
+        "value": 3,
+        "count": 2,
+        "category": "destination",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "resin": 1,
+            "pebble": 2
+        },
+        "produces": "doctor",
+        "effect": "Discard construction or critter, gain its resources + 1 pt"
+    },
+    "woodcarver": {
+        "value": 2,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Pay up to 3T for 1 pt each"
+    },
+    "architect": {
+        "value": 2,
+        "count": 2,
+        "category": "prosperity",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 4
+        },
+        "produces": "",
+        "effect": "1 pt / R or P (6 max)"
+    },
+    "storehouse": {
+        "value": 2,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 1,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "woodcarver",
+        "effect": "Store 3T or 2R or 1P or 2B to be reclaimed later"
+    },
+    "queen": {
+        "value": 4,
+        "count": 2,
+        "category": "destination",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 5
+        },
+        "produces": "",
+        "effect": "Play 1 card up to 3 pt free"
+    },
+    "judge": {
+        "value": 2,
+        "count": 2,
+        "category": "governance",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "Replace 1 resource with any other resource upon card play"
+    },
+    "farm": {
+        "value": 1,
+        "count": 8,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 2,
+            "resin": 1
+        },
+        "produces": "husband / wife",
+        "effect": "Gain 1B"
+    },
+    "fool": {
+        "value": -2,
+        "count": 2,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "Can be played in opponent's city"
+    },
+    "general store": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "shopkeeper",
+        "effect": "Gain 1B, +1B if you have a farm"
+    },
+    "husband": {
+        "value": 2,
+        "count": 4,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "Gain 1 resource if paired with wife and farm (shares spot with wife)"
+    },
+    "wife": {
+        "value": 2,
+        "count": 4,
+        "category": "prosperity",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "3 pts if paired with husband (shares spot with Husband)"
+    },
+    "ruins": {
+        "value": 0,
+        "count": 3,
+        "category": "traveler",
+        "type": "construction",
+        "rarity": false,
+        "cost": {},
+        "produces": "peddler",
+        "effect": "Discard construction, gain its resources + draw 2 cards"
+    },
+    "twig barge": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 1,
+            "pebble": 1
+        },
+        "produces": "barge toad",
+        "effect": "Gain 2T"
+    },
+    "bard": {
+        "value": 0,
+        "count": 2,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "1 pt / discarded card (5 max)"
+    },
+    "resin refinery": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "chip sweep",
+        "effect": "Gain 1R"
+    },
+    "ranger": {
+        "value": 1,
+        "count": 2,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Move worker, open 2nd dungeon slot"
+    },
+    "cemetary": {
+        "value": 0,
+        "count": 2,
+        "category": "destination",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "pebble": 2
+        },
+        "produces": "undertaker",
+        "effect": "Reveal 4 cards from main or discard, play 1 free"
+    },
+    "wanderer": {
+        "value": 1,
+        "count": 3,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Draw 3 cards (does not take a slot in city)"
+    },
+    "dungeon": {
+        "value": 0,
+        "count": 2,
+        "category": "governance",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "resin": 1,
+            "pebble": 2
+        },
+        "produces": "ranger",
+        "effect": "Lock up a critter to play a card for 3 less resources"
+    },
+    "barge toad": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "2T / farm"
+    },
+    "monk": {
+        "value": 0,
+        "count": 2,
+        "category": "production",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 1
+        },
+        "produces": "",
+        "effect": "Give up to 2B for 2 pts each"
+    },
+    "fairgrounds": {
+        "value": 3,
+        "count": 3,
+        "category": "production",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 1,
+            "resin": 2,
+            "pebble": 1
+        },
+        "produces": "fool",
+        "effect": "Draw 2 cards"
+    },
+    "peddler": {
+        "value": 1,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Replace up to 2 resources with 2 other resources"
+    },
+    "postal pigeon": {
+        "value": 0,
+        "count": 3,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Reveal 2, play 1 up to 3pt free"
+    },
+    "lookout": {
+        "value": 2,
+        "count": 2,
+        "category": "destination",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 1,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "wanderer",
+        "effect": "Copy basic or forest location"
+    },
+    "post office": {
+        "value": 2,
+        "count": 3,
+        "category": "destination",
+        "type": "construction",
+        "rarity": false,
+        "cost": {
+            "twig": 1,
+            "resin": 2
+        },
+        "produces": "postal pigeon",
+        "effect": "Give 2 cards, Discard any #, then draw max cards"
+    },
+    "monastery": {
+        "value": 1,
+        "count": 2,
+        "category": "destination",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 1,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "monk",
+        "effect": "Give 2 resources to gain 4pts"
+    },
+    "undertaker": {
+        "value": 1,
+        "count": 2,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Discard 3 meadow, replace, draw 1 meadow"
+    },
+    "teacher": {
+        "value": 2,
+        "count": 3,
+        "category": "production",
+        "type": "critter",
+        "rarity": false,
+        "cost": {
+            "berry": 2
+        },
+        "produces": "",
+        "effect": "Draw 2 cards, give 1 to opponent"
+    },
+    "chapel": {
+        "value": 2,
+        "count": 2,
+        "category": "destination",
+        "type": "construction",
+        "rarity": true,
+        "cost": {
+            "twig": 2,
+            "resin": 1,
+            "pebble": 1
+        },
+        "produces": "shepherd",
+        "effect": "Gain 1 pt (on card), draw 2 cards / pt (on card)"
+    },
+    "shepherd": {
+        "value": 1,
+        "count": 2,
+        "category": "traveler",
+        "type": "critter",
+        "rarity": true,
+        "cost": {
+            "berry": 3
+        },
+        "produces": "",
+        "effect": "3 berries paid to opponent, gain 3 berries and 1 pt / chapel pt"
+    }
+}
