@@ -51,20 +51,30 @@ function drawRandomCards(cardsQuantity) {
 
 function gameInit() {
 
+    // Generating Main Deck
     for (let card in cardsJson) {
         gameState.mainDeck.push({
-            [card]: {                 // [NEW] - computed property name
+            [card]: {                 // [NEW] Computed property name
                 ...cardsJson[card]
             }
         }
         );
     };
 
-    gameState.meadow = drawRandomCards(3);
+    // Place 8 random cards in meadow
+    gameState.meadow = drawRandomCards(8);
+
+    // Player gets 2 workers
+    gameState.player.workers = 2;
+
+    // Player draws 5 cards
+    gameState.player.hand = drawRandomCards(5);
+
 };
 
 //#######################################
 
 gameInit();
 console.log(gameState.mainDeck.length);
-console.log(gameState.meadow);
+console.log(gameState.meadow.length);
+console.log(gameState.player.hand.length);
