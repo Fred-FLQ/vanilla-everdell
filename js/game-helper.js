@@ -1,4 +1,7 @@
-const cardsJson = require('../cards.json');
+// Handle environment switch Node.js VS Browser
+if (typeof window === 'undefined') {
+    cardsJson = require('../cards.json');
+}
 
 const gameState = {
     mainDeck: [],
