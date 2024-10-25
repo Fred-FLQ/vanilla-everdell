@@ -1,6 +1,6 @@
-// Handle environment switch Node.js VS Browser
+// Handle environment switch: Node.js VS Browser
 if (typeof window === 'undefined') {
-    cardsJson = require('../cards.json');
+    cardsJson = require('../data/cards.json');
 }
 
 const gameState = {
