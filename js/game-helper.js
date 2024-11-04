@@ -1,28 +1,6 @@
-// Handle environment switch: Node.js VS Browser
-if (typeof window === 'undefined') {
-    cardsJson = require('../data/cards.json');
-}
+import { gameState } from "./dom-helper.js";
 
-const gameState = {
-    mainDeck: [],
-    meadow: [],
-    discardDeck: [],
-    player: {
-        name: "Player",
-        city: [],
-        workers: 0,
-        hand: [],
-        points: 0,
-        resources: {
-            twig: 0,
-            resin: 0,
-            pebble: 0,
-            berry: 0
-        }
-    }
-};
-
-function drawRandomCards(cardsQuantity) {
+export const drawRandomCards = cardsQuantity => {
     let randomCards = [];
 
     for (let i = 1; i <= cardsQuantity; i++) {
@@ -51,33 +29,3 @@ function drawRandomCards(cardsQuantity) {
     }
     return randomCards;
 }
-
-function gameInit() {
-
-    // Generating Main Deck
-    for (let card in cardsJson) {
-        gameState.mainDeck.push({
-            [card]: {                 // [NEW] Computed property name
-                ...cardsJson[card]
-            }
-        }
-        );
-    };
-
-    // Place 8 random cards in meadow
-    gameState.meadow = drawRandomCards(8);
-
-    // Player gets 2 workers
-    gameState.player.workers = 2;
-
-    // Player draws 5 cards
-    gameState.player.hand = drawRandomCards(5);
-
-};
-
-//#######################################
-
-gameInit();
-console.log(gameState.mainDeck.length);
-console.log(gameState.meadow.length);
-console.log(gameState.player.hand.length);
