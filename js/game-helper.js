@@ -9,23 +9,21 @@ export const drawRandomCards = cardsQuantity => {
             throw new Error('Deck is empty');
         }
 
+        // Get a random card
         let randomNumber = Math.floor(Math.random() * gameState.mainDeck.length);
         let randomCard = gameState.mainDeck[randomNumber];
 
-        // Accessing count property of randomCard - [NEW] Easier to use the static method Object.values()
-        for (let key in randomCard) {
-            let cardData = randomCard[key];
+        // Edge Case Handling: corrupted initial data
+        if (randomCard.count === undefined) randomCard.count = 1;
 
-            if (cardData.count === undefined) cardData.count = 1; // Edge Case Handling: corrupted initial data
-
-            if (cardData.count === 1) {
-                gameState.mainDeck.splice(randomNumber, 1);
-            } else {
-                cardData.count -= 1;
-            }
-
-            randomCards.push(randomCard);
+        if (randomCard.count === 1) {
+            gameState.mainDeck.splice(randomNumber, 1); // Remove the card from deck if only 1 of a kind left
+        } else {
+            randomCard.count -= 1;
         }
+
+        randomCards.push(randomCard);
+
     }
     return randomCards;
 }

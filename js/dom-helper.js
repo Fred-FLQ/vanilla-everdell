@@ -32,11 +32,9 @@ const fetchCardsData = async () => {
         .then(cardsJson => {
             for (let card in cardsJson) {
                 gameState.mainDeck.push({
-                    [card]: {                 // [NEW] Computed property name
-                        ...cardsJson[card]
-                    }
-                }
-                );
+                    name: card,
+                    ...cardsJson[card]
+                })
             }
         })
         .catch(error => console.error("Error fetching cards data:", error));
@@ -56,10 +54,30 @@ const gameInit = async () => {
     gameState.player.hand = drawRandomCards(5);
 }
 
-const updateWorkersCount = async () => {
+const renderPlayerWorkers = async () => {
     const playerWorkersElem = document.querySelector('#player-workers span');
     playerWorkersElem.innerHTML = gameState.player.workers;
 }
 
+const renderPlayerHand = async () => {
+    const playerHandElem = document.querySelector('#player-hand');
+    gameState.player.hand.forEach(card => {
+        const playerCard = playerHandElem.appendChild(document.createElement("div"));
+        playerCard.innerHTML = card.name;
+    })
+}
+
+const renderMeadow = async () => {
+    const meadowElem = document.querySelector('#meadow');
+    gameState.meadow.forEach(card => {
+        const meadowCard = meadowElem.appendChild(document.createElement("div"));
+        meadowCard.innerHTML = card.name;
+    })
+}
+
 gameInit();
-window.updateWorkersCount = updateWorkersCount;
+
+// For testing
+window.renderPlayerWorkers = renderPlayerWorkers;
+window.renderPlayerHand = renderPlayerHand;
+window.renderMeadow = renderMeadow;
