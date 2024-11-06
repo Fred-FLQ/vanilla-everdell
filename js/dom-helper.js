@@ -70,7 +70,7 @@ const renderPlayerHand = async () => {
                 <div class="category">${card.category}</div>
                 <div class="name-type">
                     <h3 class="name">${card.name}</h3>
-                    <span class="type">${card.type}</p>
+                    <span class="type">${card.unique === false ? `Common` : `Unique`} ${card.type}</p>
                 </div>
                 <div class="value">${card.value}</div>
             </header>
