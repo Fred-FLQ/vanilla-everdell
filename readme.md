@@ -17,10 +17,11 @@ Nothing fancy here:
 - [x] HTML
 - [x] CSS
 - [x] JavaScript
+- [x] Git (CLI)
 - [x] Json object generated with Python from an Excel => CSV file
 
 Here are the tools I used:
- - [Visual Studio Code](https://code.visualstudio.com/)
+ - [Visual Studio Code](https://code.visualstudio.com/) and its terminal
  - GitHub (you are there already!)
 
 ## References
