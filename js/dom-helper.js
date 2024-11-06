@@ -62,15 +62,32 @@ const renderPlayerWorkers = async () => {
 const renderPlayerHand = async () => {
     const playerHandElem = document.querySelector('#player-hand');
     gameState.player.hand.forEach(card => {
-        const playerCard = playerHandElem.appendChild(document.createElement("div"));
-        playerCard.innerHTML = card.name;
+        const playerCard = playerHandElem.appendChild(document.createElement("article"));
+        // [NEW] Add class to element with classList => https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+        playerCard.classList.add("card");
+        playerCard.innerHTML = `
+            <header>
+                <div class="category">${card.category}</div>
+                <div class="name-type">
+                    <h3 class="name">${card.name}</h3>
+                    <span class="type">${card.type}</p>
+                </div>
+                <div class="value">${card.value}</div>
+            </header>
+            <p class="effect">${card.effect}</p>
+            <footer>
+                <ul class="cost">${card.cost}</ul> <!-- Need to loop through card.cost to generate ul li -->
+                ${card.produces ? `<div class="produces">${card.produces}</div>` : ''}
+            </footer>
+        `
+        // [NEW] I can use a ternary operator within the ${...} syntax
     })
 }
 
 const renderMeadow = async () => {
     const meadowElem = document.querySelector('#meadow');
     gameState.meadow.forEach(card => {
-        const meadowCard = meadowElem.appendChild(document.createElement("div"));
+        const meadowCard = meadowElem.appendChild(document.createElement("article"));
         meadowCard.innerHTML = card.name;
     })
 }
