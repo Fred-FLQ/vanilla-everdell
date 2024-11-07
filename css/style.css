@@ -1,0 +1,47 @@
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 2fr));
+    gap: 1rem;
+}
+
+.card header {
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    background-color: rgb(83, 55, 154);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.card .category, .card .value, .card p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card .name-type {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card h3 {
+    text-transform: uppercase;
+}
+
+.card .type {
+    font-size: 0.8rem;
+}
+
+.card .value {
+    font-size: 2rem;
+    background-color: rgb(150, 177, 125);
+    border-top-right-radius: 15px;
+}
+
+.card footer {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    background-color: rgb(83, 55, 154);
+    color: white;
+    border-radius: 0 0 15px 15px;
+}
