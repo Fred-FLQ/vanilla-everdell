@@ -60,14 +60,14 @@ const renderPlayerWorkers = async () => {
 }
 
 const renderPlayerHand = async () => {
-    const playerHandElem = document.querySelector('#player-hand');
+    const playerHandElem = document.querySelector('#player-hand .cards-grid');
     gameState.player.hand.forEach(card => {
         const playerCard = playerHandElem.appendChild(document.createElement("article"));
         // [NEW] Add class to element with classList => https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
         playerCard.classList.add("card");
         const cardCostHTML = Object.keys(card.cost).map(ressource => {
-               return `<li>${ressource}: ${card.cost[ressource]}</li>`;
-            }).join(''); // Remove ','
+            return `<li>${ressource}: ${card.cost[ressource]}</li>`;
+        }).join(''); // Remove ','
         playerCard.innerHTML = `
             <header>
                 <div class="category">${card.category}</div>
