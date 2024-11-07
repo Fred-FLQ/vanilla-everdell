@@ -65,6 +65,9 @@ const renderPlayerHand = async () => {
         const playerCard = playerHandElem.appendChild(document.createElement("article"));
         // [NEW] Add class to element with classList => https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
         playerCard.classList.add("card");
+        const cardCostHTML = Object.keys(card.cost).map(ressource => {
+               return `<li>${ressource}: ${card.cost[ressource]}</li>`;
+            }).join(''); // Remove ','
         playerCard.innerHTML = `
             <header>
                 <div class="category">${card.category}</div>
@@ -76,7 +79,7 @@ const renderPlayerHand = async () => {
             </header>
             <p class="effect">${card.effect}</p>
             <footer>
-                <ul class="cost">${card.cost}</ul> <!-- Need to loop through card.cost to generate ul li -->
+                <ul class="cost">${cardCostHTML}</ul>
                 ${card.produces ? `<div class="produces">${card.produces}</div>` : ''}
             </footer>
         `
