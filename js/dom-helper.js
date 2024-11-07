@@ -59,16 +59,16 @@ const renderPlayerWorkers = async () => {
     playerWorkersElem.innerHTML = gameState.player.workers;
 }
 
-const renderPlayerHand = async () => {
-    const playerHandElem = document.querySelector('#player-hand .cards-grid');
-    gameState.player.hand.forEach(card => {
-        const playerCard = playerHandElem.appendChild(document.createElement("article"));
-        // [NEW] Add class to element with classList => https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
-        playerCard.classList.add("card");
+// New function to render cards in different context
+const renderCards = async (cardsArray, containerElem) => {
+    const renderCardsElem = containerElem;
+    cardsArray.forEach(card => {
+        const cardContainer = renderCardsElem.appendChild(document.createElement("article"));
+        cardContainer.classList.add("card");
         const cardCostHTML = Object.keys(card.cost).map(ressource => {
             return `<li>${ressource}: ${card.cost[ressource]}</li>`;
         }).join(''); // Remove ','
-        playerCard.innerHTML = `
+        cardContainer.innerHTML = `
             <header>
                 <div class="category">${card.category}</div>
                 <div class="name-type">
@@ -82,22 +82,12 @@ const renderPlayerHand = async () => {
                 <ul class="cost">${cardCostHTML}</ul>
                 ${card.produces ? `<div class="produces">${card.produces}</div>` : ''}
             </footer>
-        `
-        // [NEW] I can use a ternary operator within the ${...} syntax
+    `
     })
-}
-
-const renderMeadow = async () => {
-    const meadowElem = document.querySelector('#meadow');
-    gameState.meadow.forEach(card => {
-        const meadowCard = meadowElem.appendChild(document.createElement("article"));
-        meadowCard.innerHTML = card.name;
-    })
-}
+};
 
 gameInit();
 
 // For testing
 window.renderPlayerWorkers = renderPlayerWorkers;
-window.renderPlayerHand = renderPlayerHand;
-window.renderMeadow = renderMeadow;
+window.renderCards = renderCards;
