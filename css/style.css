@@ -1,7 +1,12 @@
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 2fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 2fr));
     gap: 1rem;
+}
+
+.card {
+    font-size: 0.9rem;
+    text-transform: capitalize;
 }
 
 .card header {
@@ -26,6 +31,8 @@
 
 .card h3 {
     text-transform: uppercase;
+    font-size: 0.9rem;
+    margin-bottom: 0;
 }
 
 .card .type {
@@ -40,8 +47,14 @@
 
 .card footer {
     display: grid;
-    grid-template-columns: 2fr 1fr;
     background-color: rgb(83, 55, 154);
     color: white;
     border-radius: 0 0 15px 15px;
+}
+
+.card .cost {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    padding-left: 0px;
 }
