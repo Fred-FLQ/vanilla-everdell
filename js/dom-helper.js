@@ -20,7 +20,13 @@ export const gameState = {
     },
     basicActionSpaces: {
         threeTwig: 0,
-        twoTwigOneCard: 0
+        twoTwigOneCard: 0,
+        twoResin: 0,
+        oneResinOneCard: 0,
+        twoCardOnePoint: 0,
+        onePebble:0,
+        oneBerryOneCard: 0,
+        oneBerry: 0
     }
 };
 
@@ -103,30 +109,73 @@ const placeWorker = async (location) => {
         renderCounter(gameState.basicActionSpaces[location], document.querySelector(`#${location} span`));
         getResources(location);
     } else {
-        alert("You don't have enough workers.");
+        alert("You don't have any more workers.");
     }
+}
+
+// New function to increase victory points
+const addPoints = (amount) => {
+    gameState.player.points += amount;
+    renderCounter(gameState.player.points, document.querySelector('#player-points span'));
+}
+
+// [DRY] New function to avoid repetitions in getResources() + easier to add resources and test game mechanics
+const modifyResources = (resource, amount) => { // Quantity can be negative
+    gameState.player.resources[resource] += amount;
+    renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
 }
 
 const getResources = async (location) => {
+    let newCards; // [WARNING] Need to declare it before hand because a switch statement does not create separate scopes for each case. 
     switch (location) {
         case 'threeTwig':
-            gameState.player.resources.twig += 3;
-            renderCounter(gameState.player.resources.twig, document.querySelector('#twigs span'));
+            modifyResources('twig', 3);
             break;
         case 'twoTwigOneCard':
-            gameState.player.resources.twig += 2;
-            renderCounter(gameState.player.resources.twig, document.querySelector('#twigs span'));
-            const newCards = drawRandomCards(1);
+            modifyResources('twig', 2);
+            newCards = drawRandomCards(1);
             newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
             renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            break;
+        case 'twoResin':
+            modifyResources('resin', 2);
+            break;
+        case 'oneResinOneCard':
+            modifyResources('resin', 1);
+            newCards = drawRandomCards(1);
+            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
+            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            break;
+        case 'twoCardOnePoint':
+            newCards = drawRandomCards(2);
+            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
+            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            addPoints(1);
+            break;
+        case 'onePebble':
+            modifyResources('pebble', 1);
+            break;
+        case 'oneBerryOneCard':
+            modifyResources('berry', 1);
+            newCards = drawRandomCards(1);
+            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
+            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            break;
+        case 'oneBerry':
+            modifyResources('berry', 1);
             break;
     }
 }
 
-gameInit();
+gameInit().then(()=>{
+    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
+    renderCounter(gameState.player.workers,document.querySelector('#player-workers span'));
+    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+})
 
 // For testing
 // window.renderPlayerWorkers = renderPlayerWorkers;
 window.renderCounter = renderCounter;
 window.renderCards = renderCards;
 window.placeWorker = placeWorker;
+window.modifyResources = modifyResources;
