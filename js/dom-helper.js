@@ -61,8 +61,7 @@ const gameInit = async () => {
 
 // New generic function to render counters
 const renderCounter = async (counterState, containerElem) => {
-    const counterElement = containerElem;
-    counterElement.textContent = counterState;
+    containerElem.textContent = counterState;
 }
 
 // New function to render cards in different context
