@@ -21,6 +21,8 @@ export const drawRandomCards = cardsQuantity => {
         } else {
             randomCard.count -= 1;
         }
+        // Add a unique ID to drawn card
+        randomCard.id = crypto.randomUUID();
 
         randomCards.push(randomCard);
 
