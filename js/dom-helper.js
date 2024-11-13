@@ -77,6 +77,7 @@ const renderCards = async (cardsArray, containerElem) => {
         cardContainer.classList.add("card");
         // Generate id element with card.id
         cardContainer.id = card.id;
+
         const cardCostHTML = Object.keys(card.cost)
             .map(ressource => {
                 return `<li>${ressource}: ${card.cost[ressource]}&nbsp;</li>`;
@@ -168,26 +169,41 @@ const getResources = async (location) => {
 }
 
 const playCard = async (cardID) => {
-    // Get id attribute on click and assign it to cardID
-    // loop (while) through array of cards (hand or meadow) until match cardID = card.id
-    // Assign the match to a new variable selectedCard
+    // loop through player.hand until match cardID = card.id
+    const selectedCard = gameState.player.hand.find(card => card.id === cardID); // If true, returns matching card
+    // For testing purpose only
+    console.log(selectedCard);
+
     // if selectedCard.unique = true, check if already in city
+    // if (selectedCard.unique === true) {      }
+
     // check that selectedCard.cost <= player.resources
+    Object.keys(selectedCard.cost).map(resource => {
+        if (gameState.player.resources[resource] < selectedCard.cost[resource]) {
+            console.log(`Not enough ${resource}`);
+        } else {
+            modifyResources(resource, -selectedCard.cost[resource]); // WOW! This is actually working just like that!
+        }
+    });
     // If both of the above OK:
     //    - remove selectedCard from array
     //    - add selectedCard to player.city
     //    - remove selectedCard.cost from player.resources
     //    - apply selectecCard effects, points,...
-}
+};
 
 gameInit().then(() => {
     renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
     renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+    // Add event listener to player.hand cards
+    document.querySelectorAll("#player-hand .card").forEach(card => {
+        card.onclick = () => playCard(card.id);
+    });
 })
 
 // For testing
-window.gameState = gameState; // [NEW] Make gameState globally accessible
+window.gameState = gameState;
 // window.renderPlayerWorkers = renderPlayerWorkers;
 // window.renderCounter = renderCounter;
 // window.renderCards = renderCards;
