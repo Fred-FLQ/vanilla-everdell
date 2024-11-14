@@ -171,20 +171,30 @@ const getResources = async (location) => {
 const playCard = async (cardID) => {
     // loop through player.hand until match cardID = card.id
     const selectedCard = gameState.player.hand.find(card => card.id === cardID); // If true, returns matching card
-    // For testing purpose only
-    console.log(selectedCard);
 
     // if selectedCard.unique = true, check if already in city
     // if (selectedCard.unique === true) {      }
 
-    // check that selectedCard.cost <= player.resources
+    // [NEW] Concept of Flag Variable
+    let costPaid = false;
+
+    // Check that selectedCard.cost <= player.resources
     Object.keys(selectedCard.cost).map(resource => {
         if (gameState.player.resources[resource] < selectedCard.cost[resource]) {
             console.log(`Not enough ${resource}`);
         } else {
-            modifyResources(resource, -selectedCard.cost[resource]); // WOW! This is actually working just like that!
+            modifyResources(resource, -selectedCard.cost[resource]);
+            costPaid = true;
         }
     });
+
+    if (costPaid) {
+        gameState.player.city.push(selectedCard);
+        let selectedCardIndex = gameState.player.hand.indexOf(selectedCard);
+        gameState.player.hand.splice(selectedCardIndex, 1);
+        renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+        renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
+    }
     // If both of the above OK:
     //    - remove selectedCard from array
     //    - add selectedCard to player.city
