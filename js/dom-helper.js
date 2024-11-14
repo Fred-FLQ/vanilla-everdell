@@ -168,10 +168,9 @@ const getResources = async (location) => {
     }
 }
 
-const playCard = async (cardID) => {
-    // loop through player.hand until match cardID = card.id
-    const selectedCard = gameState.player.hand.find(card => card.id === cardID); // If true, returns matching card
-    console.log(selectedCard);
+const playCard = async (cardID, cardsArray) => {
+    // loop through cards array until match cardID = card.id
+    const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
 
     // If selected card is unique, check if already in city
     if (selectedCard.unique && gameState.player.city.find(card => card.name === selectedCard.name)) {
@@ -184,23 +183,27 @@ const playCard = async (cardID) => {
 
     if (!hasEnoughResources) {
         console.log('Not enough resources to play this card.');
-        return;
     } else {
         Object.keys(selectedCard.cost).forEach(resource => {
             modifyResources(resource, -selectedCard.cost[resource]);
         });
     };
 
+    // Add played card to city and remove it from hand/meadow
     gameState.player.city.push(selectedCard);
-    const selectedCardIndex = gameState.player.hand.indexOf(selectedCard);
-    gameState.player.hand.splice(selectedCardIndex, 1);
+    const selectedCardIndex = cardsArray.indexOf(selectedCard);
+    cardsArray.splice(selectedCardIndex, 1);
 
     // WARNING!!! When I re-render, I lose my eventListener.
     renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
     renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
-    // Quick fix test
+    // Quick fix test ==> [OPTIMIZE] Need to wrap those (above and below) in a function to avoid redundancy
     document.querySelectorAll("#player-hand .card").forEach(card => {
-        card.onclick = () => playCard(card.id);
+        card.onclick = () => playCard(card.id, gameState.player.hand);
+    });
+    document.querySelectorAll("#meadow .card").forEach(card => {
+        card.onclick = () => playCard(card.id, gameState.meadow);
     });
 };
 
@@ -208,9 +211,12 @@ gameInit().then(() => {
     renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
     renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
-    // Add event listener to player.hand cards
+    // Add event listener to player.hand and meadow cards
     document.querySelectorAll("#player-hand .card").forEach(card => {
-        card.onclick = () => playCard(card.id);
+        card.onclick = () => playCard(card.id, gameState.player.hand);
+    });
+    document.querySelectorAll("#meadow .card").forEach(card => {
+        card.onclick = () => playCard(card.id, gameState.meadow);
     });
 })
 
