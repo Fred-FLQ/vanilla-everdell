@@ -60,7 +60,7 @@ const gameInit = async () => {
     gameState.player.workers = 2;
 
     // Player draws 5 cards
-    gameState.player.hand = drawRandomCards(5);
+    gameState.player.hand = drawRandomCards(15);
 }
 
 // New generic function to render counters
@@ -171,35 +171,37 @@ const getResources = async (location) => {
 const playCard = async (cardID) => {
     // loop through player.hand until match cardID = card.id
     const selectedCard = gameState.player.hand.find(card => card.id === cardID); // If true, returns matching card
+    console.log(selectedCard);
 
-    // if selectedCard.unique = true, check if already in city
-    // if (selectedCard.unique === true) {      }
+    // If selected card is unique, check if already in city
+    if (selectedCard.unique && gameState.player.city.find(card => card.name === selectedCard.name)) {
+        console.log('You cannot have 2 unique identical cards.');
+        return; // Exit if unique card already exists
+    };
 
-    // [NEW] Concept of Flag Variable
-    let costPaid = false;
+    // Check if player has enough resources
+    const hasEnoughResources = Object.keys(selectedCard.cost).every(resource => gameState.player.resources[resource] >= selectedCard.cost[resource]);
 
-    // Check that selectedCard.cost <= player.resources
-    Object.keys(selectedCard.cost).map(resource => {
-        if (gameState.player.resources[resource] < selectedCard.cost[resource]) {
-            console.log(`Not enough ${resource}`);
-        } else {
+    if (!hasEnoughResources) {
+        console.log('Not enough resources to play this card.');
+        return;
+    } else {
+        Object.keys(selectedCard.cost).forEach(resource => {
             modifyResources(resource, -selectedCard.cost[resource]);
-            costPaid = true;
-        }
-    });
+        });
+    };
 
-    if (costPaid) {
-        gameState.player.city.push(selectedCard);
-        let selectedCardIndex = gameState.player.hand.indexOf(selectedCard);
-        gameState.player.hand.splice(selectedCardIndex, 1);
-        renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
-        renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
-    }
-    // If both of the above OK:
-    //    - remove selectedCard from array
-    //    - add selectedCard to player.city
-    //    - remove selectedCard.cost from player.resources
-    //    - apply selectecCard effects, points,...
+    gameState.player.city.push(selectedCard);
+    const selectedCardIndex = gameState.player.hand.indexOf(selectedCard);
+    gameState.player.hand.splice(selectedCardIndex, 1);
+
+    // WARNING!!! When I re-render, I lose my eventListener.
+    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+    renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
+    // Quick fix test
+    document.querySelectorAll("#player-hand .card").forEach(card => {
+        card.onclick = () => playCard(card.id);
+    });
 };
 
 gameInit().then(() => {
