@@ -60,7 +60,7 @@ const gameInit = async () => {
     gameState.player.workers = 2;
 
     // Player draws 5 cards
-    gameState.player.hand = drawRandomCards(15);
+    gameState.player.hand = drawRandomCards(5);
 }
 
 // New generic function to render counters
@@ -86,7 +86,7 @@ const renderCards = async (cardsArray, containerElem) => {
         card.produces = null; // Remove the "produces" part of the card for now
         cardContainer.innerHTML = `
             <header>
-                <div class="category">${card.category}</div>
+                <div class="category">${card.category[0]}</div>
                 <div class="name-type">
                     <h3 class="name">${card.name}</h3>
                     <span class="type">${card.unique === false ? `Common` : `Unique`} ${card.type}</p>
@@ -178,11 +178,12 @@ const playCard = async (cardID, cardsArray) => {
         return; // Exit if unique card already exists
     };
 
-    // Check if player has enough resources
+    // Check if player has enough resources // [NEW] every()
     const hasEnoughResources = Object.keys(selectedCard.cost).every(resource => gameState.player.resources[resource] >= selectedCard.cost[resource]);
 
     if (!hasEnoughResources) {
         console.log('Not enough resources to play this card.');
+        return;
     } else {
         Object.keys(selectedCard.cost).forEach(resource => {
             modifyResources(resource, -selectedCard.cost[resource]);
