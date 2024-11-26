@@ -4,6 +4,7 @@
 <head>
     <title>Vanilla JS Everdell</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/style.css" rel="stylesheet" type="text/css" />
     <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" type="image/gif"> <!-- Empty
     favicon to prevent error in console -->
@@ -11,24 +12,23 @@
 
 <body>
     <header>
-
-    </header>
-    <main>
+        <h1>Vanilla JS Everdell</h1>
         <div id="player-data">
             <div id="player-points">Points: <span>0</span></div>
             <div id="player-workers">Workers: <span>0</span></div>
-            <div>
-                <ul id="resources"> <!-- Modify subsequent IDs to match gameState properties -->
-                    <li id="twig">Twigs: <span>0</span></li>
-                    <li id="resin">Resin: <span>0</span></li>
-                    <li id="pebble">Pebbles: <span>0</span></li>
-                    <li id="berry">Berries: <span>0</span></li>
-                </ul>
-            </div>
+            <ul id="resources">
+                <li id="twig">Twigs: <span>0</span></li>
+                <li id="resin">Resin: <span>0</span></li>
+                <li id="pebble">Pebbles: <span>0</span></li>
+                <li id="berry">Berries: <span>0</span></li>
+            </ul>
         </div>
-        <section>
-            <h3>Locations</h3>
-            <ul id="basic-locations">
+    </header>
+
+    <main>
+        <section id="locations">
+            <h2>Locations</h2>
+            <ul>
                 <li id="threeTwig">3 Twigs: <span>0</span></li>
                 <li id="twoTwigOneCard">2 Twigs + 1 Card: <span>0</span></li>
                 <li id="twoResin">2 Resins: <span>0</span></li>
@@ -39,22 +39,46 @@
                 <li id="oneBerry">1 Berry: <span>0</span></li>
             </ul>
         </section>
-        <section id="player-city">
-            <h2>Player's City</h2>
-            <div class="cards-grid">
+
+        <section id="player-area">
+            <h2>Player Area</h2>
+            <div id="player-city">
+                <h3>City (Max 15 Cards)</h3>
+                <div class="cards-grid"></div>
+            </div>
+            <div id="player-hand">
+                <h3>Hand (5-8 Cards)</h3>
+                <div class="cards-grid"></div>
             </div>
         </section>
-        <section id="player-hand">
-            <h2>Player's Hand</h2>
-            <div class="cards-grid">
-            </div>
-        </section>
+
         <section id="meadow">
             <h2>Meadow</h2>
             <div class="cards-grid">
             </div>
         </section>
+
     </main>
+
+    <footer>
+        <button id="change-season">Change Season</button>
+        <button id="show-computer">Show Computer's City</button>
+        <button id="show-discard">Discard Deck</button>
+    </footer>
+
+    <aside id="computer-area" class="hidden">
+        <h2>Computer</h2>
+        <div class="cards-grid">
+        </div>
+        <button id="close-computer">Close</button>
+    </aside>
+
+    <aside id="discard-popup" class="hidden">
+        <h2>Discard Deck</h2>
+        <div class="cards-grid"></div>
+        <button id="close-popup">Close</button>
+    </aside>
+    
 </body>
 <script type="module" src="./js/dom-helper.js"></script>
 <script type="module" src="./js/game-helper.js"></script>
