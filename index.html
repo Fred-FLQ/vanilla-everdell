@@ -8,11 +8,12 @@
     <link href="./css/style.css" rel="stylesheet" type="text/css" />
     <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" type="image/gif"> <!-- Empty
     favicon to prevent error in console -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header>
-        <h1>Vanilla JS Everdell</h1>
+        <img class="logo" alt="Vanilla JS Everdell logo" src="logo.svg"/>
         <div id="player-data">
             <div id="player-points">Points: <span>0</span></div>
             <div id="player-workers">Workers: <span>0</span></div>
@@ -43,11 +44,11 @@
         <section id="player-area">
             <h2>Player Area</h2>
             <div id="player-city">
-                <h3>City (Max 15 Cards)</h3>
+                <h3>Your City</h3>
                 <div class="cards-grid"></div>
             </div>
             <div id="player-hand">
-                <h3>Hand (5-8 Cards)</h3>
+                <h3>Your Hand</h3>
                 <div class="cards-grid"></div>
             </div>
         </section>

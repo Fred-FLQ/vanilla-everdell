@@ -85,7 +85,7 @@ const renderCards = async (cardsArray, containerElem) => {
             .join(''); // Remove ','
         card.produces = null; // Remove the "produces" part of the card for now
         cardContainer.innerHTML = `
-            <header>
+            <header class="${card.category}">
                 <div class="category">${card.category[0]}</div>
                 <div class="name-type">
                     <h3 class="name">${card.name}</h3>
@@ -94,7 +94,7 @@ const renderCards = async (cardsArray, containerElem) => {
                 <div class="value">${card.value}</div>
             </header>
             <p class="effect">${card.effect}</p>
-            <footer>
+            <footer class="${card.category}">
                 <ul class="cost">${cardCostHTML}</ul>
                 ${card.produces ? `<div class="produces">${card.produces}</div>` : ''}
             </footer>

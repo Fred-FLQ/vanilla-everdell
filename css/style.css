@@ -6,9 +6,19 @@
 }
 
 :root {
-    --first-color: #EEC765;
-    --second-color: #F7E884;
-  }
+    --ev-dark-brown: #3D3924;
+    --ev-gold: #CFAF54;
+    --ev-vanilla: #e8daaa;
+    --ev-ebony: #5C5B3F;
+    --ev-reseda-green: #7C7847;
+    --ev-cat-tan-traveler: #A79273;
+    --ev-cat-green-production: #8AAA60;
+    --ev-cat-red-destination: #A74F5F;
+    --ev-cat-blue-governance: #53869B;
+    --ev-cat-purple-prosperity: #705697;
+}
+
+/* linear-gradient(152deg, #ffd478, #424242) */
 
 body {
     font-family: Arial, sans-serif;
@@ -16,11 +26,12 @@ body {
     grid-template-rows: auto 1fr auto;
     gap: 10px;
     height: 100vh;
-    background: linear-gradient(152deg, #ffd478, #424242);
+    background: var(--ev-vanilla) ;
+    background-attachment: fixed;
 }
 
 /* Header */
-body > header {
+body>header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -28,7 +39,14 @@ body > header {
     position: sticky;
     top: 0px;
     z-index: 10;
-    background-color: var(--second-color);
+    color: white;
+    background-color: var(--ev-dark-brown);
+    border-bottom: 1px solid var(--ev-reseda-green);
+}
+
+.logo {
+    width: clamp(180px, 10%, 250px);
+    height: auto;
 }
 
 header #player-data {
@@ -46,7 +64,7 @@ header ul {
 /* Main */
 main {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "locations locations"
         "player-area player-area"
         "meadow meadow";
@@ -68,7 +86,7 @@ main {
     display: flex;
     list-style: none;
     gap: 5px;
-    justify-content:space-around;
+    justify-content: space-around;
 }
 
 #player-area {
@@ -97,22 +115,43 @@ main {
     font-size: 0.9rem;
     text-transform: capitalize;
     border-radius: 10px;
-    background-color: var(--first-color);
+    background-color: var(--ev-gold);
     width: 215px;
     height: 150px;
+}
+
+.traveler {
+    background-color: var(--ev-cat-tan-traveler);
+}
+
+.production {
+    background-color: var(--ev-cat-green-production);
+}
+
+.destination {
+    background-color: var(--ev-cat-red-destination);
+}
+
+.governance {
+    background-color: var(--ev-cat-blue-governance);
+}
+
+.prosperity {
+    background-color: var(--ev-cat-purple-prosperity);
 }
 
 .card header {
     flex-grow: 1;
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
-    background-color: rgb(83, 55, 154);
     color: white;
     border-radius: 10px 10px 0 0;
     align-items: center;
 }
 
-.card .category, .card .value, .card p {
+.card .category,
+.card .value,
+.card p {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -151,7 +190,6 @@ main {
 .card footer {
     flex-grow: 0.5;
     display: grid;
-    background-color: rgb(83, 55, 154);
     color: white;
     border-radius: 0 0 10px 10px;
 }
@@ -165,12 +203,12 @@ main {
 }
 
 /* Footer */
-body > footer {
+body>footer {
     display: flex;
     justify-content: space-evenly;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-top: 2px solid #ddd;
+    padding: 15px;
+    background-color: var(--ev-dark-brown);
+    border-top: 1px solid var(--ev-reseda-green);
     position: sticky;
     bottom: 0;
     z-index: 10;
