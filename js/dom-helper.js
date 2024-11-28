@@ -32,7 +32,7 @@ export const gameState = {
 
 // Fetch data from cards.json and populate gameState.mainDeck
 const fetchCardsData = async () => {
-    await fetch('/data/cards.json')
+    await fetch('./data/cards.json')
         .then(response => {
             if (!response.ok) {         // Reversed the logic for readability: making error the exception
                 throw new Error('Network response failed.');
