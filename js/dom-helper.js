@@ -185,6 +185,12 @@ const getResources = async (location) => {
 }
 
 const playCard = async (cardID, cardsArray) => {
+    // Check how many cards in Player's city
+    if (gameState.player.city.length === 15) {
+        alert('You have reached the maximum number of cards in your city.');
+        return;
+    }
+
     // Loop through cards array until match cardID = card.id
     const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
 
