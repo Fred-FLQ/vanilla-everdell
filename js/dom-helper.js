@@ -63,12 +63,13 @@ const gameInit = async () => {
     gameState.player.hand = drawRandomCards(5);
 }
 
-// New generic function to render counters
+// Cards Rendering, updating and event listeners
+// Render counters
 const renderCounter = async (counterState, containerElem) => {
     containerElem.textContent = counterState;
 }
 
-// New function to render cards in different context
+// Render cards in different context
 const renderCards = async (cardsArray, containerElem) => {
     containerElem.innerHTML = ''; // Clear container before loading cards
     const renderCardsElem = containerElem;
@@ -102,6 +103,21 @@ const renderCards = async (cardsArray, containerElem) => {
     })
 };
 
+// Render and attach event listeners
+const renderPlayerHandWithListeners = () => {
+    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+    document.querySelectorAll("#player-hand .card").forEach(card => {
+        card.onclick = () => playCard(card.id, gameState.player.hand);
+    });
+}
+
+const renderMeadowWithListeners = () => {
+    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
+    document.querySelectorAll('#meadow .card').forEach(card => {
+        card.onclick = () => playCard(card.id, gameState.meadow);
+    })
+}
+
 const placeWorker = async (location) => {
     if (gameState.player.workers > 0) {
         gameState.player.workers -= 1;
@@ -114,20 +130,20 @@ const placeWorker = async (location) => {
     }
 }
 
-// New function to increase victory points
+// Increase victory points
 const addPoints = (amount) => {
     gameState.player.points += amount;
     renderCounter(gameState.player.points, document.querySelector('#player-points span'));
 }
 
-// [DRY] New function to avoid repetitions in getResources() + easier to add resources and test game mechanics
+// Modify resources (avoid repetitions in getResources() + easier to add resources and test game mechanics)
 const modifyResources = (resource, amount) => { // Quantity can be negative
     gameState.player.resources[resource] += amount;
     renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
 }
 
 const getResources = async (location) => {
-    let newCards; // [WARNING] Need to declare it before hand because a switch statement does not create separate scopes for each case. 
+    let newCards; // Need to declare it before hand because a switch statement does not create separate scopes for each case. 
     switch (location) {
         case 'threeTwig':
             modifyResources('twig', 3);
@@ -136,7 +152,7 @@ const getResources = async (location) => {
             modifyResources('twig', 2);
             newCards = drawRandomCards(1);
             newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            renderPlayerHandWithListeners();
             break;
         case 'twoResin':
             modifyResources('resin', 2);
@@ -145,12 +161,12 @@ const getResources = async (location) => {
             modifyResources('resin', 1);
             newCards = drawRandomCards(1);
             newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            renderPlayerHandWithListeners();
             break;
         case 'twoCardOnePoint':
             newCards = drawRandomCards(2);
             newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            renderPlayerHandWithListeners();
             addPoints(1);
             break;
         case 'onePebble':
@@ -160,7 +176,7 @@ const getResources = async (location) => {
             modifyResources('berry', 1);
             newCards = drawRandomCards(1);
             newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+            renderPlayerHandWithListeners();
             break;
         case 'oneBerry':
             modifyResources('berry', 1);
@@ -169,20 +185,20 @@ const getResources = async (location) => {
 }
 
 const playCard = async (cardID, cardsArray) => {
-    // loop through cards array until match cardID = card.id
+    // Loop through cards array until match cardID = card.id
     const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
 
     // If selected card is unique, check if already in city
     if (selectedCard.unique && gameState.player.city.find(card => card.name === selectedCard.name)) {
-        console.log('You cannot have 2 unique identical cards.');
+        alert('You cannot have 2 unique identical cards.');
         return; // Exit if unique card already exists
     };
 
-    // Check if player has enough resources // [NEW] every()
+    // Check if player has enough resources
     const hasEnoughResources = Object.keys(selectedCard.cost).every(resource => gameState.player.resources[resource] >= selectedCard.cost[resource]);
 
     if (!hasEnoughResources) {
-        console.log('Not enough resources to play this card.');
+        alert('Not enough resources to play this card.');
         return;
     } else {
         Object.keys(selectedCard.cost).forEach(resource => {
@@ -195,36 +211,25 @@ const playCard = async (cardID, cardsArray) => {
     const selectedCardIndex = cardsArray.indexOf(selectedCard);
     cardsArray.splice(selectedCardIndex, 1);
 
-    // WARNING!!! When I re-render, I lose my eventListener.
-    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
-    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
+    // Draw card for meadow if necessary
+    if (gameState.meadow.length === 7) {
+        let newCard = drawRandomCards(1);
+        newCard.forEach(card => gameState.meadow.push(card))
+    }
+
+    // Rendering
+    renderPlayerHandWithListeners();
+    renderMeadowWithListeners();
     renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
-    // Quick fix test ==> [OPTIMIZE] Need to wrap those (above and below) in a function to avoid redundancy
-    document.querySelectorAll("#player-hand .card").forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.player.hand);
-    });
-    document.querySelectorAll("#meadow .card").forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.meadow);
-    });
 };
 
 gameInit().then(() => {
-    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
-    // Add event listener to player.hand and meadow cards
-    document.querySelectorAll("#player-hand .card").forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.player.hand);
-    });
-    document.querySelectorAll("#meadow .card").forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.meadow);
-    });
+    renderPlayerHandWithListeners();
+    renderMeadowWithListeners();
 })
 
 // For testing
 window.gameState = gameState;
-// window.renderPlayerWorkers = renderPlayerWorkers;
-// window.renderCounter = renderCounter;
-// window.renderCards = renderCards;
 window.placeWorker = placeWorker;
 window.modifyResources = modifyResources;
