@@ -68,7 +68,7 @@ const gameInit = async () => {
     gameState.player.hand = drawRandomCards(5);
 
     //For testing
-    gameState.computer.city = drawRandomCards(3);
+    // gameState.computer.city = drawRandomCards(3);
 }
 
 // Cards Rendering, updating and event listeners
@@ -77,7 +77,7 @@ const renderCounter = async (counterState, containerElem) => {
     containerElem.textContent = counterState;
 }
 
-// Render cards in different context
+// Render cards in context
 const renderCards = async (cardsArray, containerElem) => {
     containerElem.innerHTML = ''; // Clear container before loading cards
     const renderCardsElem = containerElem;
