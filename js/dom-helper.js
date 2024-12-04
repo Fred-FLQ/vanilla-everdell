@@ -18,6 +18,11 @@ export const gameState = {
             berry: 0
         }
     },
+    computer: {
+        name: "Rugwort",
+        city: [],
+        points: 0
+    },
     basicActionSpaces: {
         threeTwig: 0,
         twoTwigOneCard: 0,
@@ -61,6 +66,9 @@ const gameInit = async () => {
 
     // Player draws 5 cards
     gameState.player.hand = drawRandomCards(5);
+
+    //For testing
+    gameState.computer.city = drawRandomCards(3);
 }
 
 // Cards Rendering, updating and event listeners
@@ -229,10 +237,24 @@ const playCard = async (cardID, cardsArray) => {
     renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
 };
 
+const showComputer = () => {
+    const showCpuButton = document.getElementById('show-computer');
+    const showCpuArea = document.getElementById('computer-area');
+
+    showCpuButton.addEventListener('click', () => {
+        const isHidden = showCpuArea.classList.toggle('hidden'); // [NEW] .classList.toggle()
+        showCpuButton.innerText = isHidden ? 'Show Computer\'s City' : 'Hide Computer\'s City';
+        showCpuButton.setAttribute('aria-expanded', !isHidden);
+        showCpuArea.setAttribute('aria-hidden', isHidden);
+    })
+}
+
 gameInit().then(() => {
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
     renderPlayerHandWithListeners();
     renderMeadowWithListeners();
+    renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
+    showComputer();
 })
 
 // For testing
