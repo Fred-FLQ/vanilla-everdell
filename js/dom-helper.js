@@ -112,9 +112,15 @@ const renderCards = async (cardsArray, containerElem) => {
 };
 
 // Render and attach event listeners
+const workersWithListeners = () => {
+    document.querySelectorAll('#locations li').forEach((location) => {
+        location.onclick = () => placeWorker(location.id);
+    })
+}
+
 const renderPlayerHandWithListeners = () => {
     renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
-    document.querySelectorAll("#player-hand .card").forEach(card => {
+    document.querySelectorAll('#player-hand .card').forEach(card => {
         card.onclick = () => playCard(card.id, gameState.player.hand);
     });
 }
@@ -124,18 +130,6 @@ const renderMeadowWithListeners = () => {
     document.querySelectorAll('#meadow .card').forEach(card => {
         card.onclick = () => playCard(card.id, gameState.meadow);
     })
-}
-
-const placeWorker = async (location) => {
-    if (gameState.player.workers > 0) {
-        gameState.player.workers -= 1;
-        gameState.basicActionSpaces[location] += 1;
-        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-        renderCounter(gameState.basicActionSpaces[location], document.querySelector(`#${location} span`));
-        getResources(location);
-    } else {
-        alert("You don't have any more workers.");
-    }
 }
 
 // Increase victory points
@@ -189,6 +183,20 @@ const getResources = async (location) => {
         case 'oneBerry':
             modifyResources('berry', 1);
             break;
+    }
+}
+
+// Players actions
+
+const placeWorker = async (location) => {
+    if (gameState.player.workers > 0) {
+        gameState.player.workers -= 1;
+        gameState.basicActionSpaces[location] += 1;
+        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
+        renderCounter(gameState.basicActionSpaces[location], document.querySelector(`#${location} span`));
+        getResources(location);
+    } else {
+        alert("You don't have any more workers.");
     }
 }
 
@@ -251,6 +259,7 @@ const showComputer = () => {
 
 gameInit().then(() => {
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
+    workersWithListeners();
     renderPlayerHandWithListeners();
     renderMeadowWithListeners();
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
