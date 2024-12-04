@@ -217,17 +217,18 @@ body>footer {
 /* Popup */
 #computer-area {
     position: fixed;
-    bottom: 0;
+    bottom: 50px;
     left: 0;
     right: 0;
     background-color: white;
     border-top: 2px solid #ccc;
     padding: 10px;
-    display: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-#computer-area.hidden {
-    display: none;
+.hidden {
+    opacity: 0;
+    visibility: hidden;
 }
 
 #discard-popup {
@@ -238,9 +239,5 @@ body>footer {
     background-color: white;
     border-top: 2px solid #ccc;
     padding: 10px;
-    display: none;
-}
-
-#discard-popup.hidden {
     display: none;
 }
