@@ -63,17 +63,17 @@
 
     <footer>
         <button id="change-season">Change Season</button>
-        <button id="show-computer">Show Computer's City</button>
+        <button id="show-computer" aria-expanded="false" aria-controls="computer-area">Show Computer's City</button> <!-- Improve accessibility -->
         <button id="show-discard">Discard Deck</button>
     </footer>
 
-    <aside id="computer-area" class="hidden">
+    <aside id="computer-area" class="hidden" aria-hidden="true">
         <h2>Rugwort's City</h2>
         <div class="cards-grid">
         </div>
     </aside>
 
-    <aside id="discard-popup" class="hidden">
+    <aside id="discard-popup" class="hidden" aria-hidden="true">
         <h2>Discard Deck</h2>
         <div class="cards-grid"></div>
     </aside>
