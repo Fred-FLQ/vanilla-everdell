@@ -239,10 +239,18 @@ const playCard = async (cardID, cardsArray) => {
         newCard.forEach(card => gameState.meadow.push(card))
     }
 
+    // Rugwort plays a card automatically after the player
+    let rugwortCardIndex = Math.floor(Math.random() * 8);
+    let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
+    rugwortNewCard.forEach(card => gameState.computer.city.push(card));
+    let newMeadowCard = drawRandomCards(1);
+    newMeadowCard.forEach(card => gameState.meadow.push(card));
+
     // Rendering
     renderPlayerHandWithListeners();
     renderMeadowWithListeners();
     renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
+    renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
 };
 
 const showComputer = () => {
