@@ -132,10 +132,22 @@ const renderMeadowWithListeners = () => {
     })
 }
 
+const renderAllCards = () => {
+    renderPlayerHandWithListeners();
+    renderMeadowWithListeners();
+    renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
+    renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
+}
+
 // Increase victory points
 const addPoints = (amount) => {
     gameState.player.points += amount;
     renderCounter(gameState.player.points, document.querySelector('#player-points span'));
+}
+
+// Check resources
+const hasEnoughResources = (card) => {
+    return Object.keys(card.cost).every(resource => gameState.player.resources[resource] >= card.cost[resource]);
 }
 
 // Modify resources (avoid repetitions in getResources() + easier to add resources and test game mechanics)
@@ -186,8 +198,20 @@ const getResources = async (location) => {
     }
 }
 
-// Players actions
+// Add cards to area
+const addCardToArea = (card, area) => {
+    area.push(card);
+}
 
+// Replenish Meadow
+const replenishMeadow = () => {
+    if (gameState.meadow.length < 8) {
+        let newCard = drawRandomCards(1);
+        newCard.forEach(card => addCardToArea(card, gameState.meadow));
+    }
+}
+
+// Players & computer actions
 const placeWorker = async (location) => {
     if (gameState.player.workers > 0) {
         gameState.player.workers -= 1;
@@ -198,6 +222,13 @@ const placeWorker = async (location) => {
     } else {
         alert("You don't have any more workers.");
     }
+}
+
+const cpuPlaysCard = () => {
+    let rugwortCardIndex = Math.floor(Math.random() * 8);
+    let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
+    rugwortNewCard.forEach(card => addCardToArea(card, gameState.computer.city));
+    replenishMeadow();
 }
 
 const playCard = async (cardID, cardsArray) => {
@@ -217,9 +248,7 @@ const playCard = async (cardID, cardsArray) => {
     };
 
     // Check if player has enough resources
-    const hasEnoughResources = Object.keys(selectedCard.cost).every(resource => gameState.player.resources[resource] >= selectedCard.cost[resource]);
-
-    if (!hasEnoughResources) {
+    if (!hasEnoughResources(selectedCard)) {
         alert('Not enough resources to play this card.');
         return;
     } else {
@@ -229,28 +258,18 @@ const playCard = async (cardID, cardsArray) => {
     };
 
     // Add played card to city and remove it from hand/meadow
-    gameState.player.city.push(selectedCard);
+    addCardToArea(selectedCard, gameState.player.city);
     const selectedCardIndex = cardsArray.indexOf(selectedCard);
     cardsArray.splice(selectedCardIndex, 1);
 
     // Draw card for meadow if necessary
-    if (gameState.meadow.length === 7) {
-        let newCard = drawRandomCards(1);
-        newCard.forEach(card => gameState.meadow.push(card))
-    }
+    replenishMeadow();
 
     // Rugwort plays a card automatically after the player
-    let rugwortCardIndex = Math.floor(Math.random() * 8);
-    let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
-    rugwortNewCard.forEach(card => gameState.computer.city.push(card));
-    let newMeadowCard = drawRandomCards(1);
-    newMeadowCard.forEach(card => gameState.meadow.push(card));
+    cpuPlaysCard();
 
     // Rendering
-    renderPlayerHandWithListeners();
-    renderMeadowWithListeners();
-    renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
-    renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
+    renderAllCards();
 };
 
 const showComputer = () => {
@@ -276,5 +295,4 @@ gameInit().then(() => {
 
 // For testing
 window.gameState = gameState;
-window.placeWorker = placeWorker;
 window.modifyResources = modifyResources;
