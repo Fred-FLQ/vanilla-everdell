@@ -1,4 +1,4 @@
-import { gameState } from "./dom-helper.js";
+import { gameState } from "./game-state.js";
 
 export const drawRandomCards = cardsQuantity => {
     let randomCards = [];
