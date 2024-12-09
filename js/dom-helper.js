@@ -1,4 +1,4 @@
-import { drawRandomCards } from './game-helper.js';
+import { drawRandomCards } from './cards-handling.js';
 import { gameState } from './game-state.js';
 
 // Fetch data from cards.json and populate gameState.mainDeck
