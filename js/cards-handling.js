@@ -1,6 +1,26 @@
 import { gameState } from "./game-state.js";
 
-export const drawRandomCards = cardsQuantity => {
+// Fetch data from cards.json and populate gameState.mainDeck
+const fetchCardsData = async () => {
+    await fetch('./data/cards.json')
+        .then(response => {
+            if (!response.ok) {         // Reversed the logic for readability: making error the exception
+                throw new Error('Network response failed.');
+            }
+            return response.json();
+        })
+        .then(cardsJson => {
+            for (let card in cardsJson) {
+                gameState.mainDeck.push({
+                    name: card,
+                    ...cardsJson[card]
+                })
+            }
+        })
+        .catch(error => console.error("Error fetching cards data:", error));
+}
+
+const drawRandomCards = cardsQuantity => {
     let randomCards = [];
 
     for (let i = 1; i <= cardsQuantity; i++) {
@@ -29,3 +49,18 @@ export const drawRandomCards = cardsQuantity => {
     }
     return randomCards;
 }
+
+// Add cards to area
+const addCardToArea = (card, area) => {
+    area.push(card);
+}
+
+// Replenish Meadow
+const replenishMeadow = () => {
+    if (gameState.meadow.length < 8) {
+        let newCard = drawRandomCards(1);
+        newCard.forEach(card => addCardToArea(card, gameState.meadow));
+    }
+}
+
+export { fetchCardsData, drawRandomCards, addCardToArea, replenishMeadow };

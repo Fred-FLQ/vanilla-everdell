@@ -1,25 +1,6 @@
-import { drawRandomCards } from './cards-handling.js';
+import { drawRandomCards, fetchCardsData } from './cards-handling.js';
 import { gameState } from './game-state.js';
-
-// Fetch data from cards.json and populate gameState.mainDeck
-const fetchCardsData = async () => {
-    await fetch('./data/cards.json')
-        .then(response => {
-            if (!response.ok) {         // Reversed the logic for readability: making error the exception
-                throw new Error('Network response failed.');
-            }
-            return response.json();
-        })
-        .then(cardsJson => {
-            for (let card in cardsJson) {
-                gameState.mainDeck.push({
-                    name: card,
-                    ...cardsJson[card]
-                })
-            }
-        })
-        .catch(error => console.error("Error fetching cards data:", error));
-}
+import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
 
 const gameInit = async () => {
     await fetchCardsData();
@@ -33,8 +14,6 @@ const gameInit = async () => {
     // Player draws 5 cards
     gameState.player.hand = drawRandomCards(5);
 
-    //For testing
-    // gameState.computer.city = drawRandomCards(3);
 }
 
 // Cards Rendering, updating and event listeners
@@ -105,139 +84,6 @@ const renderAllCards = () => {
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
 }
 
-// Increase victory points
-const addPoints = (amount) => {
-    gameState.player.points += amount;
-    renderCounter(gameState.player.points, document.querySelector('#player-points span'));
-}
-
-// Check resources
-const hasEnoughResources = (card) => {
-    return Object.keys(card.cost).every(resource => gameState.player.resources[resource] >= card.cost[resource]);
-}
-
-// Modify resources (avoid repetitions in getResources() + easier to add resources and test game mechanics)
-const modifyResources = (resource, amount) => { // Quantity can be negative
-    gameState.player.resources[resource] += amount;
-    renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
-}
-
-const getResources = async (location) => {
-    let newCards; // Need to declare it before hand because a switch statement does not create separate scopes for each case. 
-    switch (location) {
-        case 'threeTwig':
-            modifyResources('twig', 3);
-            break;
-        case 'twoTwigOneCard':
-            modifyResources('twig', 2);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderPlayerHandWithListeners();
-            break;
-        case 'twoResin':
-            modifyResources('resin', 2);
-            break;
-        case 'oneResinOneCard':
-            modifyResources('resin', 1);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderPlayerHandWithListeners();
-            break;
-        case 'twoCardOnePoint':
-            newCards = drawRandomCards(2);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderPlayerHandWithListeners();
-            addPoints(1);
-            break;
-        case 'onePebble':
-            modifyResources('pebble', 1);
-            break;
-        case 'oneBerryOneCard':
-            modifyResources('berry', 1);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderPlayerHandWithListeners();
-            break;
-        case 'oneBerry':
-            modifyResources('berry', 1);
-            break;
-    }
-}
-
-// Add cards to area
-const addCardToArea = (card, area) => {
-    area.push(card);
-}
-
-// Replenish Meadow
-const replenishMeadow = () => {
-    if (gameState.meadow.length < 8) {
-        let newCard = drawRandomCards(1);
-        newCard.forEach(card => addCardToArea(card, gameState.meadow));
-    }
-}
-
-// Players & computer actions
-const placeWorker = async (location) => {
-    if (gameState.player.workers > 0) {
-        gameState.player.workers -= 1;
-        gameState.basicActionSpaces[location] += 1;
-        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-        renderCounter(gameState.basicActionSpaces[location], document.querySelector(`#${location} span`));
-        getResources(location);
-    } else {
-        alert("You don't have any more workers.");
-    }
-}
-
-const cpuPlaysCard = () => {
-    let rugwortCardIndex = Math.floor(Math.random() * 8);
-    let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
-    rugwortNewCard.forEach(card => addCardToArea(card, gameState.computer.city));
-    replenishMeadow();
-}
-
-const playCard = async (cardID, cardsArray) => {
-    // Check how many cards in Player's city
-    if (gameState.player.city.length === 15) {
-        alert('You have reached the maximum number of cards in your city.');
-        return;
-    }
-
-    // Loop through cards array until match cardID = card.id
-    const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
-
-    // If selected card is unique, check if already in city
-    if (selectedCard.unique && gameState.player.city.find(card => card.name === selectedCard.name)) {
-        alert('You cannot have 2 unique identical cards.');
-        return; // Exit if unique card already exists
-    };
-
-    // Check if player has enough resources
-    if (!hasEnoughResources(selectedCard)) {
-        alert('Not enough resources to play this card.');
-        return;
-    } else {
-        Object.keys(selectedCard.cost).forEach(resource => {
-            modifyResources(resource, -selectedCard.cost[resource]);
-        });
-    };
-
-    // Add played card to city and remove it from hand/meadow
-    addCardToArea(selectedCard, gameState.player.city);
-    const selectedCardIndex = cardsArray.indexOf(selectedCard);
-    cardsArray.splice(selectedCardIndex, 1);
-
-    // Draw card for meadow if necessary
-    replenishMeadow();
-
-    // Rugwort plays a card automatically after the player
-    cpuPlaysCard();
-
-    // Rendering
-    renderAllCards();
-};
-
 const showComputer = () => {
     const showCpuButton = document.getElementById('show-computer');
     const showCpuArea = document.getElementById('computer-area');
@@ -258,6 +104,8 @@ gameInit().then(() => {
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
     showComputer();
 })
+
+export { renderAllCards, renderCounter };
 
 // For testing
 window.gameState = gameState;
