@@ -1,5 +1,5 @@
 // State Management
-export const gameState = {
+const gameState = {
     mainDeck: [],
     meadow: [],
     discardDeck: [],
@@ -32,3 +32,5 @@ export const gameState = {
         oneBerry: 0
     }
 };
+
+export { gameState };
