@@ -42,10 +42,9 @@ const drawRandomCards = cardsQuantity => {
             randomCard.count -= 1;
         }
         // Add a unique ID to drawn card
-        randomCard.id = crypto.randomUUID();
+        let drawnCard = { ...randomCard, id : crypto.randomUUID() };
 
-        randomCards.push(randomCard);
-
+        randomCards.push(drawnCard);
     }
     return randomCards;
 }
