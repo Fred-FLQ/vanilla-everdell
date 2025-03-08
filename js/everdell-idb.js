@@ -1,5 +1,5 @@
 const DB_NAME = 'everdell_DB';
-const DB_VERSION = 4;
+const DB_VERSION = 2;
 
 let everdellDB;
 
@@ -31,26 +31,30 @@ function openDB() {
 };
 
 async function populateDB(db) {
-    const transaction = db.transaction(['main-deck'], 'readwrite');
-    const objectStore = transaction.objectStore('main-deck');
+    try {
+        const response = await fetch('./data/cards.json');
+        if (!response.ok) {
+            throw new Error('Fetching from json failed.');
+        }
+        
+        const cardsJson = await response.json();            
+        
+        const transaction = db.transaction(['main-deck'], 'readwrite');
+        const objectStore = transaction.objectStore('main-deck');
 
-    const fetchCardsData = async () => {
-        await fetch('./data/cards.json')
-            .then(response => {
-                if (!response.ok) {         // Reversed the logic for readability: making error the exception
-                    throw new Error('Network response failed.');
-                }
-                return response.json();
-            })
-            .then(cardsJson => {
-                for (let card of cardsJson) {
-                    objectStore.add({
-                        name: card,
-                        ...cardsJson[card]
-                    });
-                }
-            })
-            .catch(error => console.error("Error fetching cards data:", error));
+        transaction.oncomplete = () => console.log("Transaction completed successfully.");
+        transaction.onerror = (event) => console.error("Transaction error:", event.target.error);
+
+        console.log("cardsJson:", cardsJson);
+        for (let card in cardsJson) {
+            console.log(`${card} type is ${cardsJson[card].type}`);
+            objectStore.put({
+                name: card,
+                ...cardsJson[card]
+            });
+        }
+    } catch(error) {
+        console.error("Error fetching cards data:", error);
     };
 };
 
