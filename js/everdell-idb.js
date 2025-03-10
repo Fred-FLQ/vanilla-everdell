@@ -36,26 +36,37 @@ async function populateDB(db) {
         if (!response.ok) {
             throw new Error('Fetching from json failed.');
         }
-        
-        const cardsJson = await response.json();            
-        
+
+        const cardsJson = await response.json();
+
         const transaction = db.transaction(['main-deck'], 'readwrite');
         const objectStore = transaction.objectStore('main-deck');
 
         transaction.oncomplete = () => console.log("Transaction completed successfully.");
         transaction.onerror = (event) => console.error("Transaction error:", event.target.error);
 
-        console.log("cardsJson:", cardsJson);
         for (let card in cardsJson) {
-            console.log(`${card} type is ${cardsJson[card].type}`);
             objectStore.put({
                 name: card,
                 ...cardsJson[card]
             });
         }
-    } catch(error) {
+    } catch (error) {
         console.error("Error fetching cards data:", error);
     };
 };
 
-export { openDB, populateDB };
+function getCard(cardName) {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction('main-deck', 'readonly');
+        const objectStore = transaction.objectStore('main-deck');
+        const request = objectStore.get(cardName);
+
+        request.onerror = (event) => reject('Failed to retrieve card.');
+        request.onsuccess = (event) => resolve(event.target.result);
+
+    });
+
+}
+
+export { openDB, populateDB, getCard };
