@@ -1,5 +1,5 @@
 const DB_NAME = 'everdell_DB';
-const DB_VERSION = 2;
+const DB_VERSION = 5;
 
 let everdellDB;
 
@@ -22,8 +22,13 @@ function openDB() {
 
         openRequest.onupgradeneeded = (event) => {
             everdellDB = event.target.result;
-            const objectStore = everdellDB.createObjectStore('main-deck', { keyPath: 'name' });
-            objectStore.createIndex('name', 'name', { unique: false });
+
+            if (everdellDB.objectStoreNames.contains('main-deck')) { // Need to delete my older data
+                everdellDB.deleteObjectStore('main-deck');
+            }
+
+            const objectStore = everdellDB.createObjectStore('main-deck', { keyPath: 'id' });
+            objectStore.createIndex('id', 'id', { unique: true });
             console.log('Database structure created/updated.');
         };
     });
@@ -33,6 +38,7 @@ function openDB() {
 async function populateDB(db) {
     try {
         const response = await fetch('./data/cards.json');
+        
         if (!response.ok) {
             throw new Error('Fetching from json failed.');
         }
@@ -47,6 +53,7 @@ async function populateDB(db) {
 
         for (let card in cardsJson) {
             objectStore.put({
+                id: crypto.randomUUID(),
                 name: card,
                 ...cardsJson[card]
             });
@@ -69,4 +76,39 @@ function getCard(cardName) {
 
 }
 
-export { openDB, populateDB, getCard };
+function getMainDeckLength() {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction('main-deck', 'readonly');
+        const objectStore = transaction.objectStore('main-deck');
+        const request = objectStore.count();
+
+        request.onerror = event => reject('Failed to evaluate main deck length.');
+        request.onsuccess = event => resolve(event.target.result);
+    });
+}
+
+// Need to refactor this one to drawFromDeck(number of cards to draw)
+// => ust use openCursor() and draw in order - return value
+// function getRandomEntry(num) {
+//     return new Promise((resolve, reject) => {
+//         const transaction = everdellDB.transaction('main-deck', 'readonly');
+//         const objectStore = transaction.objectStore('main-deck');
+//         const request = objectStore.openCursor();
+
+//         request.onerror = () => reject('Failed to get random entry.');
+//         request.onsuccess = () => {
+//             let cursor = request.result;
+//             if (cursor) {
+//                 let key = cursor.key;
+//                 let value = cursor.value;
+//                 // console.log(key, value);
+//                 cursor.advance(num);
+//                 return cursor.value;
+//               } else {
+//                 console.log("No more cards");
+//               }
+//         };
+//     });
+// }
+
+export { openDB, populateDB, getCard, getMainDeckLength, getRandomEntry };
