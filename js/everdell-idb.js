@@ -38,7 +38,7 @@ function openDB() {
 async function populateDB(db) {
     try {
         const response = await fetch('./data/cards.json');
-        
+
         if (!response.ok) {
             throw new Error('Fetching from json failed.');
         }
@@ -48,16 +48,21 @@ async function populateDB(db) {
         const transaction = db.transaction(['main-deck'], 'readwrite');
         const objectStore = transaction.objectStore('main-deck');
 
-        transaction.oncomplete = () => console.log("Transaction completed successfully.");
+        objectStore.clear().onsuccess = () => {
+            console.log("Cleared main-deck store. Populating with fresh data...");
+
+            for (let card in cardsJson) {
+                objectStore.put({
+                    id: crypto.randomUUID(),
+                    name: card,
+                    ...cardsJson[card]
+                });
+            }
+        }
+
+        transaction.oncomplete = () => console.log("Store populated successfully.");
         transaction.onerror = (event) => console.error("Transaction error:", event.target.error);
 
-        for (let card in cardsJson) {
-            objectStore.put({
-                id: crypto.randomUUID(),
-                name: card,
-                ...cardsJson[card]
-            });
-        }
     } catch (error) {
         console.error("Error fetching cards data:", error);
     };
@@ -71,7 +76,6 @@ function getCard(cardName) {
 
         request.onerror = (event) => reject('Failed to retrieve card.');
         request.onsuccess = (event) => resolve(event.target.result);
-
     });
 
 }
@@ -111,4 +115,4 @@ function getMainDeckLength() {
 //     });
 // }
 
-export { openDB, populateDB, getCard, getMainDeckLength, getRandomEntry };
+export { openDB, populateDB, getCard, getMainDeckLength };
