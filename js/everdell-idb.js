@@ -52,11 +52,13 @@ async function populateDB(db) {
             console.log("Cleared main-deck store. Populating with fresh data...");
 
             for (let card in cardsJson) {
-                objectStore.put({
-                    id: crypto.randomUUID(),
-                    name: card,
-                    ...cardsJson[card]
-                });
+                for (let i = cardsJson[card].count; i > 0; i--){
+                    objectStore.put({
+                        id: crypto.randomUUID(),
+                        name: card,
+                        ...cardsJson[card]
+                    });
+                }
             }
         }
 
@@ -68,17 +70,24 @@ async function populateDB(db) {
     };
 };
 
-function getCard(cardId) {
+function getCard(id) {
     return new Promise((resolve, reject) => {
         const transaction = everdellDB.transaction('main-deck', 'readonly');
         const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.get(cardId);
+        const request = objectStore.get(id);
 
         request.onerror = (event) => reject('Failed to retrieve card.');
         request.onsuccess = (event) => resolve(event.target.result);
     });
 }
 
+function deleteCard(id) {
+    const transaction = everdellDB.transaction('main-deck', 'readwrite');
+    const objectStore = transaction.objectStore('main-deck');
+    const request = objectStore.delete(id);
+}
+
+// DEPRECATED FOR NOW - Empty deck handled by openCursor()
 function getMainDeckLength() {
     return new Promise((resolve, reject) => {
         const transaction = everdellDB.transaction('main-deck', 'readonly');
@@ -90,28 +99,25 @@ function getMainDeckLength() {
     });
 }
 
-// Need to refactor this one to drawFromDeck(number of cards to draw)
-// => ust use openCursor() and draw in order - return value
-// function getRandomEntry(num) {
-//     return new Promise((resolve, reject) => {
-//         const transaction = everdellDB.transaction('main-deck', 'readonly');
-//         const objectStore = transaction.objectStore('main-deck');
-//         const request = objectStore.openCursor();
+function drawFromDeck() {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction('main-deck', 'readonly');
+        const objectStore = transaction.objectStore('main-deck');
+        const request = objectStore.openCursor();
 
-//         request.onerror = () => reject('Failed to get random entry.');
-//         request.onsuccess = () => {
-//             let cursor = request.result;
-//             if (cursor) {
-//                 let key = cursor.key;
-//                 let value = cursor.value;
-//                 // console.log(key, value);
-//                 cursor.advance(num);
-//                 return cursor.value;
-//               } else {
-//                 console.log("No more cards");
-//               }
-//         };
-//     });
-// }
+        request.onerror = () => reject('Failed to draw card.');
+        request.onsuccess = () => {
+            let cursor = request.result;
+            if (cursor) {
+                let card = cursor.value;
+                console.log(card);
+                resolve(card);
+            } else {
+                console.log("No more cards in deck.");
+            }
+        };
+    });
+}
 
-export { openDB, populateDB, getCard, getMainDeckLength };
+
+export { openDB, populateDB, getCard, drawFromDeck, getMainDeckLength };
