@@ -1,7 +1,7 @@
-import { drawRandomCards, fetchCardsData } from './cards-handling.js';
+import { drawRandomCards, fetchCardsData, drawMainDeckCards } from './cards-handling.js';
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateDB, getCard } from './everdell-idb.js';
+import { openDB, populateDB, getCard, getMainDeckLength } from './everdell-idb.js';
 
 const gameInit = async () => {
     await fetchCardsData();
@@ -117,3 +117,5 @@ export { renderAllCards, renderCounter };
 window.gameState = gameState;
 window.modifyResources = modifyResources;
 window.getCard = getCard;
+window.getMainDeckLength = getMainDeckLength;
+window.drawMainDeckCards = drawMainDeckCards;

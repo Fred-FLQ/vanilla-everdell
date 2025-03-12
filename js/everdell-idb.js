@@ -68,16 +68,15 @@ async function populateDB(db) {
     };
 };
 
-function getCard(cardName) {
+function getCard(cardId) {
     return new Promise((resolve, reject) => {
         const transaction = everdellDB.transaction('main-deck', 'readonly');
         const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.get(cardName);
+        const request = objectStore.get(cardId);
 
         request.onerror = (event) => reject('Failed to retrieve card.');
         request.onsuccess = (event) => resolve(event.target.result);
     });
-
 }
 
 function getMainDeckLength() {

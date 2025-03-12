@@ -1,10 +1,11 @@
 import { gameState } from "./game-state.js";
+import { getMainDeckLength } from "./everdell-idb.js";
 
 // Fetch data from cards.json and populate gameState.mainDeck
 const fetchCardsData = async () => {
     await fetch('./data/cards.json')
         .then(response => {
-            if (!response.ok) {         // Reversed the logic for readability: making error the exception
+            if (!response.ok) {
                 throw new Error('Network response failed.');
             }
             return response.json();
@@ -20,18 +21,25 @@ const fetchCardsData = async () => {
         .catch(error => console.error("Error fetching cards data:", error));
 }
 
+async function drawMainDeckCards(cardsQuantity) {
+    let randomCards = [];
+    
+
+
+}
+
 const drawRandomCards = cardsQuantity => {
     let randomCards = [];
 
     for (let i = 1; i <= cardsQuantity; i++) {
         // Handling empty deck
-        if (gameState.mainDeck.length === 0) {
+        if (gameState.mainDeck.length === 0) {  // [IDB] Needs an IDB.count() transaction
             throw new Error('Deck is empty');
         }
 
         // Get a random card
         let randomNumber = Math.floor(Math.random() * gameState.mainDeck.length);
-        let randomCard = gameState.mainDeck[randomNumber];
+        let randomCard = gameState.mainDeck[randomNumber]; // [IDB] Needs an IDB cursor + advance(randomNumber)
 
         // Edge Case Handling: corrupted initial data
         if (randomCard.count === undefined) randomCard.count = 1;
@@ -42,7 +50,7 @@ const drawRandomCards = cardsQuantity => {
             randomCard.count -= 1;
         }
         // Add a unique ID to drawn card
-        let drawnCard = { ...randomCard, id : crypto.randomUUID() };
+        let drawnCard = { ...randomCard, id: crypto.randomUUID() };
 
         randomCards.push(drawnCard);
     }
@@ -62,4 +70,4 @@ const replenishMeadow = () => {
     }
 }
 
-export { fetchCardsData, drawRandomCards, addCardToArea, replenishMeadow };
+export { fetchCardsData, drawRandomCards, drawMainDeckCards, addCardToArea, replenishMeadow };
