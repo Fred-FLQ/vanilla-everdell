@@ -47,23 +47,31 @@ async function populateDB(db) {
 
         const transaction = db.transaction(['main-deck'], 'readwrite');
         const objectStore = transaction.objectStore('main-deck');
+        const request = objectStore.clear();
 
-        objectStore.clear().onsuccess = () => {
+        request.onsuccess = async () => {
             console.log("Cleared main-deck store. Populating with fresh data...");
+
+            const putPromises = [];
 
             for (const [name, cardData] of Object.entries(cardsJson)) {
                 for (let i = 0; i < cardData.count; i++) {
-                    objectStore.put({
-                        id: crypto.randomUUID(),
-                        name,
-                        ...cardData
-                    });
+                    putPromises.push(
+                        objectStore.put({
+                            id: crypto.randomUUID(),
+                            name,
+                            ...cardData
+                        })
+                    );
                 }
             }
+
+            await Promise.allSettled(putPromises);
+            console.log('Store populated successfully.');
         }
 
-        transaction.oncomplete = () => console.log("Store populated successfully.");
-        transaction.onerror = (event) => console.error("Transaction error:", event.target.error);
+        request.onerror = (event) => console.log('Error clearing store: ', event.target.error);
+        transaction.onerror = (event) => console.error('Transaction error:', event.target.error);
 
     } catch (error) {
         console.error("Error fetching cards data:", error);
