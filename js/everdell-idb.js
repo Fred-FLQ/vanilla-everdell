@@ -51,12 +51,12 @@ async function populateDB(db) {
         objectStore.clear().onsuccess = () => {
             console.log("Cleared main-deck store. Populating with fresh data...");
 
-            for (let card in cardsJson) {
-                for (let i = cardsJson[card].count; i > 0; i--){
+            for (const [name, cardData] of Object.entries(cardsJson)) {
+                for (let i = 0; i < cardData.count; i++) {
                     objectStore.put({
                         id: crypto.randomUUID(),
-                        name: card,
-                        ...cardsJson[card]
+                        name,
+                        ...cardData
                     });
                 }
             }
