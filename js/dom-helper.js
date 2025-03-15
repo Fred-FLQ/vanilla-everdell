@@ -1,13 +1,13 @@
-import { drawRandomCards, fetchCardsData, drawMainDeckCards } from './cards-handling.js';
+import { drawRandomCards, fetchCardsData } from './cards-handling.js';
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateDB, getCard, getMainDeckLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, getCard, drawFromDeck, getMainDeckLength } from './everdell-idb.js';
 
 const gameInit = async () => {
     await fetchCardsData();
     openDB().then(db => {
         console.log('DB is ready, now populating...');
-        populateDB(db);
+        populateMainDeck(db);
     }).catch(error => {
         console.error('Failed to open DB:', error);
     });
@@ -117,5 +117,5 @@ export { renderAllCards, renderCounter };
 window.gameState = gameState;
 window.modifyResources = modifyResources;
 window.getCard = getCard;
+window.drawFromDeck = drawFromDeck;
 window.getMainDeckLength = getMainDeckLength;
-window.drawMainDeckCards = drawMainDeckCards;

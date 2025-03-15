@@ -35,7 +35,33 @@ function openDB() {
 
 };
 
-async function populateDB(db) {
+function queryDB(storeName, mode, action, key = null, data = null) {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction(storeName, mode);
+        const objectStore = transaction.objectStore(storeName);
+        let query;
+
+        switch (action) {
+            case 'get':
+                query = objectStore.get(key);
+                break;
+            case 'clear':
+                query = objectStore.clear();
+                break;
+            case 'put':
+                query = objectStore.put(data);
+                break;
+            default:
+                reject('Invalid action:' + action);
+                return;
+        }
+
+        query.onerror = (event) => reject('Failed to query database.');
+        query.onsuccess = (event) => resolve(event.target.result);
+    });
+};
+
+async function populateMainDeck(db) {
     try {
         const response = await fetch('./data/cards.json');
 
@@ -45,48 +71,39 @@ async function populateDB(db) {
 
         const cardsJson = await response.json();
 
-        const transaction = db.transaction(['main-deck'], 'readwrite');
-        const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.clear();
+        // const transaction = db.transaction(['main-deck'], 'readwrite');
+        // const objectStore = transaction.objectStore('main-deck');
+        // const request = objectStore.clear();
 
-        request.onsuccess = async () => {
-            console.log("Cleared main-deck store. Populating with fresh data...");
+        await queryDB('main-deck', 'readwrite', 'clear');
+        console.log("Cleared main-deck store. Populating with fresh data...");
 
-            const putPromises = [];
-
-            for (const [name, cardData] of Object.entries(cardsJson)) {
-                for (let i = 0; i < cardData.count; i++) {
-                    putPromises.push(
-                        objectStore.put({
-                            id: crypto.randomUUID(),
-                            name,
-                            ...cardData
-                        })
-                    );
-                }
+        const putPromises = [];
+        for (const [name, cardData] of Object.entries(cardsJson)) {
+            for (let i = 0; i < cardData.count; i++) {
+                putPromises.push(
+                    queryDB('main-deck', 'readwrite', 'put', null, {
+                        id: crypto.randomUUID(),
+                        name,
+                        ...cardData
+                    })
+                );
             }
-
-            await Promise.allSettled(putPromises);
-            console.log('Store populated successfully.');
         }
 
-        request.onerror = (event) => console.log('Error clearing store: ', event.target.error);
-        transaction.onerror = (event) => console.error('Transaction error:', event.target.error);
+        await Promise.allSettled(putPromises);
+        console.log('Store populated successfully.');
+
+        // request.onerror = (event) => console.log('Error clearing store: ', event.target.error);
+        // transaction.onerror = (event) => console.error('Transaction error:', event.target.error);
 
     } catch (error) {
-        console.error("Error fetching cards data:", error);
+        console.error("Error when populating main deck:", error);
     };
 };
 
-function getCard(id) {
-    return new Promise((resolve, reject) => {
-        const transaction = everdellDB.transaction('main-deck', 'readonly');
-        const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.get(id);
-
-        request.onerror = (event) => reject('Failed to retrieve card.');
-        request.onsuccess = (event) => resolve(event.target.result);
-    });
+async function getCard(cardId) {
+    return await queryDB('main-deck', 'readonly', 'get', cardId);
 }
 
 function deleteCard(id) {
@@ -107,6 +124,7 @@ function getMainDeckLength() {
     });
 }
 
+// Need to .delete() drawn card and push it to other store
 function drawFromDeck() {
     return new Promise((resolve, reject) => {
         const transaction = everdellDB.transaction('main-deck', 'readonly');
@@ -128,4 +146,4 @@ function drawFromDeck() {
 }
 
 
-export { openDB, populateDB, getCard, drawFromDeck, getMainDeckLength };
+export { openDB, populateMainDeck, getCard, drawFromDeck, getMainDeckLength };
