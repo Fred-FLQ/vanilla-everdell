@@ -56,8 +56,8 @@ function queryDB(storeName, mode, action, key = null, data = null) {
                 return;
         }
 
-        query.onerror = (event) => reject('Failed to query database.');
-        query.onsuccess = (event) => resolve(event.target.result);
+        query.onerror = () => reject('Failed to query database.');
+        query.onsuccess = () => resolve(query.result);
     });
 };
 
