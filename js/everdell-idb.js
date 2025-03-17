@@ -45,6 +45,9 @@ function queryDB(storeName, mode, action, key = null, data = null) {
         let query;
 
         switch (action) {
+            case 'add':
+                query = objectStore.add(data);
+                break;
             case 'clear':
                 query = objectStore.clear();
                 break;
@@ -80,14 +83,16 @@ async function populateMainDeck(db) {
 
         const cardsJson = await response.json();
 
-        await queryDB('main-deck', 'readwrite', 'clear');
-        console.log("Cleared main-deck store. Populating with fresh data...");
+        for (const store of db.objectStoreNames) {
+            await queryDB(store, 'readwrite', 'clear');
+            console.log(`Cleared ${store} from old data.`)
+        }
 
         const putPromises = [];
         for (const [name, cardData] of Object.entries(cardsJson)) {
             for (let i = 0; i < cardData.count; i++) {
                 putPromises.push(
-                    queryDB('main-deck', 'readwrite', 'put', null, {
+                    queryDB('main-deck', 'readwrite', 'add', null, {
                         id: crypto.randomUUID(),
                         name,
                         ...cardData
@@ -114,17 +119,18 @@ function deleteCard(id) {
     const request = objectStore.delete(id);
 }
 
-// DEPRECATED FOR NOW - Empty deck handled by openCursor() - For testing only
+// [TO DO] Make it available to all "decks"
 async function getMainDeckLength() {
     return await queryDB('main-deck', 'readonly', 'count');
 }
 
 // Need to .delete() drawn card and push it to other store
-async function drawFromDeck(deck) {
-    let cursor = await queryDB(deck, 'readonly', 'openCursor');
+async function drawFromDeck(originDeck, destinationDeck) {
+    let cursor = await queryDB(originDeck, 'readonly', 'openCursor');
     if (cursor) {
         let card = cursor.value;
         console.log(card);
+        await queryDB(destinationDeck, 'readwrite', 'add', null, card);
     } else {
         console.log('No more cards in deck.');
     }
