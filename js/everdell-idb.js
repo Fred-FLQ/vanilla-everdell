@@ -42,11 +42,14 @@ function queryDB(storeName, mode, action, key = null, data = null) {
         let query;
 
         switch (action) {
-            case 'get':
-                query = objectStore.get(key);
-                break;
             case 'clear':
                 query = objectStore.clear();
+                break;
+            case 'count':
+                query = objectStore.count();
+                break;
+            case 'get':
+                query = objectStore.get(key);
                 break;
             case 'put':
                 query = objectStore.put(data);
@@ -71,10 +74,6 @@ async function populateMainDeck(db) {
 
         const cardsJson = await response.json();
 
-        // const transaction = db.transaction(['main-deck'], 'readwrite');
-        // const objectStore = transaction.objectStore('main-deck');
-        // const request = objectStore.clear();
-
         await queryDB('main-deck', 'readwrite', 'clear');
         console.log("Cleared main-deck store. Populating with fresh data...");
 
@@ -94,9 +93,6 @@ async function populateMainDeck(db) {
         await Promise.allSettled(putPromises);
         console.log('Store populated successfully.');
 
-        // request.onerror = (event) => console.log('Error clearing store: ', event.target.error);
-        // transaction.onerror = (event) => console.error('Transaction error:', event.target.error);
-
     } catch (error) {
         console.error("Error when populating main deck:", error);
     };
@@ -112,16 +108,9 @@ function deleteCard(id) {
     const request = objectStore.delete(id);
 }
 
-// DEPRECATED FOR NOW - Empty deck handled by openCursor()
-function getMainDeckLength() {
-    return new Promise((resolve, reject) => {
-        const transaction = everdellDB.transaction('main-deck', 'readonly');
-        const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.count();
-
-        request.onerror = event => reject('Failed to evaluate main deck length.');
-        request.onsuccess = event => resolve(event.target.result);
-    });
+// DEPRECATED FOR NOW - Empty deck handled by openCursor() - For testing only
+async function getMainDeckLength() {
+    return await queryDB('main-deck', 'readonly', 'count');
 }
 
 // Need to .delete() drawn card and push it to other store
