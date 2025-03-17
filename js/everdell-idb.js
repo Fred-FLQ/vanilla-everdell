@@ -1,5 +1,5 @@
 const DB_NAME = 'everdell_DB';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 let everdellDB;
 
@@ -23,12 +23,15 @@ function openDB() {
         openRequest.onupgradeneeded = (event) => {
             everdellDB = event.target.result;
 
-            if (everdellDB.objectStoreNames.contains('main-deck')) { // Need to delete my older data
-                everdellDB.deleteObjectStore('main-deck');
+            for (const store of everdellDB.objectStoreNames) {
+                everdellDB.deleteObjectStore(store);
             }
 
-            const objectStore = everdellDB.createObjectStore('main-deck', { keyPath: 'id' });
-            objectStore.createIndex('id', 'id', { unique: true });
+            const mainDeckStore = everdellDB.createObjectStore('main-deck', { keyPath: 'id' });
+            mainDeckStore.createIndex('id', 'id', { unique: true });
+            const meadowStore = everdellDB.createObjectStore('meadow', { keyPath: 'id' });
+            meadowStore.createIndex('id', 'id', { unique: true });
+
             console.log('Database structure created/updated.');
         };
     });
@@ -50,6 +53,9 @@ function queryDB(storeName, mode, action, key = null, data = null) {
                 break;
             case 'get':
                 query = objectStore.get(key);
+                break;
+            case 'openCursor':
+                query = objectStore.openCursor();
                 break;
             case 'put':
                 query = objectStore.put(data);
@@ -114,24 +120,31 @@ async function getMainDeckLength() {
 }
 
 // Need to .delete() drawn card and push it to other store
-function drawFromDeck() {
-    return new Promise((resolve, reject) => {
-        const transaction = everdellDB.transaction('main-deck', 'readonly');
-        const objectStore = transaction.objectStore('main-deck');
-        const request = objectStore.openCursor();
+async function drawFromDeck(deck) {
+    let cursor = await queryDB(deck, 'readonly', 'openCursor');
+    if (cursor) {
+        let card = cursor.value;
+        console.log(card);
+    } else {
+        console.log('No more cards in deck.');
+    }
+    // return new Promise((resolve, reject) => {
+    //     const transaction = everdellDB.transaction('main-deck', 'readonly');
+    //     const objectStore = transaction.objectStore('main-deck');
+    //     const request = objectStore.openCursor();
 
-        request.onerror = () => reject('Failed to draw card.');
-        request.onsuccess = () => {
-            let cursor = request.result;
-            if (cursor) {
-                let card = cursor.value;
-                console.log(card);
-                resolve(card);
-            } else {
-                console.log("No more cards in deck.");
-            }
-        };
-    });
+    //     request.onerror = () => reject('Failed to draw card.');
+    //     request.onsuccess = () => {
+    //         let cursor = request.result;
+    //         if (cursor) {
+    //             let card = cursor.value;
+    //             console.log(card);
+    //             resolve(card);
+    //         } else {
+    //             console.log("No more cards in deck.");
+    //         }
+    //     };
+    // });
 }
 
 
