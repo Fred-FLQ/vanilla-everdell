@@ -119,9 +119,8 @@ function deleteCard(id) {
     const request = objectStore.delete(id);
 }
 
-// [TO DO] Make it available to all "decks"
-async function getMainDeckLength() {
-    return await queryDB('main-deck', 'readonly', 'count');
+async function getDeckLength(store) {
+    return await queryDB(store, 'readonly', 'count');
 }
 
 // Need to .delete() drawn card and push it to other store
@@ -154,4 +153,4 @@ async function drawFromDeck(originDeck, destinationDeck) {
 }
 
 
-export { openDB, populateMainDeck, getCard, drawFromDeck, getMainDeckLength };
+export { openDB, populateMainDeck, getCard, drawFromDeck, getDeckLength };
