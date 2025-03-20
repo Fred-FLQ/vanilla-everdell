@@ -113,8 +113,8 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 }
 
-async function getDeckLength(store) {
-    return await queryDB(store, 'readonly', 'count');
+async function getDeckLength(deck) {
+    return await queryDB(deck, 'readonly', 'count');
 }
 
 async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
