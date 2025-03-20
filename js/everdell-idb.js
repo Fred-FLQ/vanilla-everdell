@@ -113,6 +113,26 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 }
 
+function getAllCards(deck) {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction(deck, 'readonly');
+        const objectStore = transaction.objectStore(deck);
+        const cursorQuery = objectStore.openCursor();
+        let cardsArray = [];
+
+        cursorQuery.onsuccess = async () => {
+            let cursor = cursorQuery.result;
+            if (cursor) {
+                let card = cursor.value;
+                cardsArray.push(card);
+                cursor.continue();
+            } else {
+                resolve(cardsArray);
+            }
+        };
+    })
+}
+
 async function getDeckLength(deck) {
     return await queryDB(deck, 'readonly', 'count');
 }
@@ -124,7 +144,7 @@ async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
     const cursorQuery = originStore.openCursor();
     let cardsToDraw = cardsQuantity;
 
-    cursorQuery.onsuccess = async () => {
+    cursorQuery.onsuccess = () => {
         let cursor = cursorQuery.result;
         if (cursor && cardsToDraw > 0) {
             let card = cursor.value;
@@ -143,4 +163,4 @@ async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
     cursorQuery.onerror = () => console.error(`Unable to draw from ${originDeck}.`);
 };
 
-export { openDB, populateMainDeck, getCard, drawFromDeck, getDeckLength };
+export { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength };
