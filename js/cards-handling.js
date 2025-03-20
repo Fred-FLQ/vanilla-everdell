@@ -1,5 +1,5 @@
 import { gameState } from "./game-state.js";
-import { getMainDeckLength } from "./everdell-idb.js";
+import { getDeckLength } from "./everdell-idb.js";
 
 // Fetch data from cards.json and populate gameState.mainDeck
 const fetchCardsData = async () => {
@@ -19,13 +19,6 @@ const fetchCardsData = async () => {
             }
         })
         .catch(error => console.error("Error fetching cards data:", error));
-}
-
-async function drawMainDeckCards(cardsQuantity) {
-    let randomCards = [];
-    
-
-
 }
 
 const drawRandomCards = cardsQuantity => {
@@ -70,4 +63,4 @@ const replenishMeadow = () => {
     }
 }
 
-export { fetchCardsData, drawRandomCards, drawMainDeckCards, addCardToArea, replenishMeadow };
+export { fetchCardsData, drawRandomCards, addCardToArea, replenishMeadow };
