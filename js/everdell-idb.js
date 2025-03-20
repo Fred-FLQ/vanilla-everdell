@@ -123,34 +123,30 @@ async function getDeckLength(store) {
     return await queryDB(store, 'readonly', 'count');
 }
 
-// Need to .delete() drawn card and push it to other store
-async function drawFromDeck(originDeck, destinationDeck) {
-    let cursor = await queryDB(originDeck, 'readonly', 'openCursor');
-    if (cursor) {
-        let card = cursor.value;
-        console.log(card);
-        await queryDB(destinationDeck, 'readwrite', 'add', null, card);
-    } else {
-        console.log('No more cards in deck.');
-    }
-    // return new Promise((resolve, reject) => {
-    //     const transaction = everdellDB.transaction('main-deck', 'readonly');
-    //     const objectStore = transaction.objectStore('main-deck');
-    //     const request = objectStore.openCursor();
+async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
+    const transaction = everdellDB.transaction([originDeck, destinationDeck], 'readwrite');
+    const originStore = transaction.objectStore(originDeck);
+    const destinationStore = transaction.objectStore(destinationDeck);
+    const cursorQuery = originStore.openCursor();
+    let cardsToDraw = cardsQuantity;
 
-    //     request.onerror = () => reject('Failed to draw card.');
-    //     request.onsuccess = () => {
-    //         let cursor = request.result;
-    //         if (cursor) {
-    //             let card = cursor.value;
-    //             console.log(card);
-    //             resolve(card);
-    //         } else {
-    //             console.log("No more cards in deck.");
-    //         }
-    //     };
-    // });
-}
+    cursorQuery.onsuccess = async () => {
+        let cursor = cursorQuery.result;
+        if (cursor && cardsToDraw > 0) {
+            let card = cursor.value;
 
+            let addRequest = destinationStore.add(card);
+            addRequest.onsuccess = () => {
+                cursor.delete();
+                cardsToDraw--;
+                cursor.continue();
+            }
+        } else {
+            console.log(`${cardsQuantity} cards successfully drawn.`);
+        }
+    };
+
+    cursorQuery.onerror = () => console.error(`Unable to draw from ${originDeck}.`);
+};
 
 export { openDB, populateMainDeck, getCard, drawFromDeck, getDeckLength };
