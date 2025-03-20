@@ -1,16 +1,21 @@
 import { drawRandomCards, fetchCardsData } from './cards-handling.js';
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateMainDeck, getCard, drawFromDeck, getDeckLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength } from './everdell-idb.js';
 
 const gameInit = async () => {
     await fetchCardsData();
-    openDB().then(db => {
-        console.log('DB is ready, now populating...');
-        populateMainDeck(db);
-    }).catch(error => {
-        console.error('Failed to open DB:', error);
-    });
+    openDB()
+        .then(db => {
+            console.log('DB is ready, now populating...');
+            return populateMainDeck(db);
+        })
+        .then(()=>{
+            drawFromDeck('main-deck', 'meadow', 3);
+        })
+        .catch(error => {
+            console.error('Failed to open DB:', error);
+        });
     // Place 8 random cards in meadow
     gameState.meadow = drawRandomCards(8);
 
@@ -119,3 +124,5 @@ window.modifyResources = modifyResources;
 window.getCard = getCard;
 window.drawFromDeck = drawFromDeck;
 window.getDeckLength = getDeckLength;
+window.getAllCards = getAllCards;
+window.renderCards = renderCards;
