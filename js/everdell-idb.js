@@ -113,12 +113,6 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 }
 
-function deleteCard(id) {
-    const transaction = everdellDB.transaction('main-deck', 'readwrite');
-    const objectStore = transaction.objectStore('main-deck');
-    const request = objectStore.delete(id);
-}
-
 async function getDeckLength(store) {
     return await queryDB(store, 'readonly', 'count');
 }
