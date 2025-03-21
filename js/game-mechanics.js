@@ -2,24 +2,21 @@ import { gameState } from "./game-state.js";
 import { drawRandomCards, addCardToArea, replenishMeadow } from "./cards-handling.js";
 import { renderCounter, renderAllCards } from "./dom-helper.js";
 
-// Increase victory points
-const addPoints = (amount) => {
+function addPoints(amount) {
     gameState.player.points += amount;
     renderCounter(gameState.player.points, document.querySelector('#player-points span'));
-}
+};
 
-// Check resources
-const hasEnoughResources = (card) => {
+function hasEnoughResources(card) {
     return Object.keys(card.cost).every(resource => gameState.player.resources[resource] >= card.cost[resource]);
-}
+};
 
-// Modify resources (avoid repetitions in getResources() + easier to add resources and test game mechanics)
-const modifyResources = (resource, amount) => { // Quantity can be negative
+function modifyResources(resource, amount) { // Quantity can be negative
     gameState.player.resources[resource] += amount;
     renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
-}
+};
 
-const getResources = async (location) => {
+async function getResources(location) {
     let newCards; // Need to declare it before hand because a switch statement does not create separate scopes for each case. 
     switch (location) {
         case 'threeTwig':
@@ -59,10 +56,10 @@ const getResources = async (location) => {
             modifyResources('berry', 1);
             break;
     }
-}
+};
 
 // Players & computer actions
-const placeWorker = async (location) => {
+async function placeWorker(location) {
     if (gameState.player.workers > 0) {
         gameState.player.workers -= 1;
         gameState.basicActionSpaces[location] += 1;
@@ -72,16 +69,16 @@ const placeWorker = async (location) => {
     } else {
         alert("You don't have any more workers.");
     }
-}
+};
 
-const cpuPlaysCard = () => {
+function cpuPlaysCard() {
     let rugwortCardIndex = Math.floor(Math.random() * 8);
     let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
     rugwortNewCard.forEach(card => addCardToArea(card, gameState.computer.city));
     replenishMeadow();
-}
+};
 
-const playCard = async (cardID, cardsArray) => {
+async function playCard(cardID, cardsArray) {
     // Check how many cards in Player's city
     if (gameState.player.city.length === 15) {
         alert('You have reached the maximum number of cards in your city.');

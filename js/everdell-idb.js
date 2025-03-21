@@ -111,7 +111,7 @@ async function populateMainDeck(db) {
 
 async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
-}
+};
 
 function getAllCards(deck) {
     return new Promise((resolve, reject) => {
@@ -131,11 +131,11 @@ function getAllCards(deck) {
             }
         };
     })
-}
+};
 
 async function getDeckLength(deck) {
     return await queryDB(deck, 'readonly', 'count');
-}
+};
 
 async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
     const transaction = everdellDB.transaction([originDeck, destinationDeck], 'readwrite');

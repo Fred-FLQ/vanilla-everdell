@@ -3,7 +3,7 @@ import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
 import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength } from './everdell-idb.js';
 
-const gameInit = async () => {
+async function gameInit() {
     await fetchCardsData();
     openDB()
         .then(db => {
@@ -25,16 +25,16 @@ const gameInit = async () => {
     // Player draws 5 cards
     gameState.player.hand = drawRandomCards(5);
 
-}
+};
 
 // Cards Rendering, updating and event listeners
 // Render counters
-const renderCounter = async (counterState, containerElem) => {
+async function renderCounter(counterState, containerElem) {
     containerElem.textContent = counterState;
-}
+};
 
 // Render cards in context
-const renderCards = async (cardsArray, containerElem) => {
+async function renderCards(cardsArray, containerElem) {
     containerElem.innerHTML = ''; // Clear container before loading cards
     const renderCardsElem = containerElem;
     cardsArray.forEach(card => {
@@ -68,34 +68,34 @@ const renderCards = async (cardsArray, containerElem) => {
 };
 
 // Render and attach event listeners
-const workersWithListeners = () => {
+function workersWithListeners() {
     document.querySelectorAll('#locations li').forEach((location) => {
         location.onclick = () => placeWorker(location.id);
     })
-}
+};
 
-const renderPlayerHandWithListeners = () => {
+function renderPlayerHandWithListeners() {
     renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
     document.querySelectorAll('#player-hand .card').forEach(card => {
         card.onclick = () => playCard(card.id, gameState.player.hand);
     });
-}
+};
 
-const renderMeadowWithListeners = () => {
+function renderMeadowWithListeners() {
     renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
     document.querySelectorAll('#meadow .card').forEach(card => {
         card.onclick = () => playCard(card.id, gameState.meadow);
     })
-}
+};
 
-const renderAllCards = () => {
+function renderAllCards() {
     renderPlayerHandWithListeners();
     renderMeadowWithListeners();
     renderCards(gameState.player.city, document.querySelector('#player-city .cards-grid'));
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
-}
+};
 
-const showComputer = () => {
+function showComputer() {
     const showCpuButton = document.getElementById('show-computer');
     const showCpuArea = document.getElementById('computer-area');
 
@@ -105,7 +105,7 @@ const showComputer = () => {
         showCpuButton.setAttribute('aria-expanded', !isHidden);
         showCpuArea.setAttribute('aria-hidden', isHidden);
     })
-}
+};
 
 gameInit().then(() => {
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
@@ -114,7 +114,7 @@ gameInit().then(() => {
     renderMeadowWithListeners();
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
     showComputer();
-})
+});
 
 export { renderAllCards, renderCounter };
 
