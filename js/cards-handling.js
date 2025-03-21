@@ -1,26 +1,6 @@
 import { gameState } from "./game-state.js";
 import { getDeckLength } from "./everdell-idb.js";
 
-// Fetch data from cards.json and populate gameState.mainDeck
-const fetchCardsData = async () => {
-    await fetch('./data/cards.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response failed.');
-            }
-            return response.json();
-        })
-        .then(cardsJson => {
-            for (let card in cardsJson) {
-                gameState.mainDeck.push({
-                    name: card,
-                    ...cardsJson[card]
-                })
-            }
-        })
-        .catch(error => console.error("Error fetching cards data:", error));
-}
-
 const drawRandomCards = cardsQuantity => {
     let randomCards = [];
 
@@ -63,4 +43,4 @@ const replenishMeadow = () => {
     }
 }
 
-export { fetchCardsData, drawRandomCards, addCardToArea, replenishMeadow };
+export { drawRandomCards, addCardToArea, replenishMeadow };
