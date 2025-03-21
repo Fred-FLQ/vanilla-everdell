@@ -1,5 +1,5 @@
 const DB_NAME = 'everdell_DB';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 let everdellDB;
 
@@ -29,11 +29,9 @@ function openDB() {
 
             const mainDeckStore = everdellDB.createObjectStore('main-deck', { keyPath: 'id' });
             mainDeckStore.createIndex('id', 'id', { unique: true });
-            const meadowStore = everdellDB.createObjectStore('meadow', { keyPath: 'id' });
-            meadowStore.createIndex('id', 'id', { unique: true });
-            const handsStore = everdellDB.createObjectStore('hands', { keyPath: 'id' });
-            handsStore.createIndex('id', 'id', { unique: true });
-            handsStore.createIndex('owner', 'owner', { unique: false });
+            const cardsStore = everdellDB.createObjectStore('cards', { keyPath: 'id' });
+            cardsStore.createIndex('id', 'id', { unique: true });
+            cardsStore.createIndex('location', 'location', { unique: false });
 
             console.log('Database structure created/updated.');
         };
@@ -98,6 +96,7 @@ async function populateMainDeck(db) {
                     queryDB('main-deck', 'readwrite', 'add', null, {
                         id: crypto.randomUUID(),
                         name,
+                        location: 'main-deck',
                         ...cardData
                     })
                 );
@@ -116,21 +115,19 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 };
 
-function getAllCards(db, deck) {
+function getAllCards(db, location) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(deck, 'readonly');
-        const objectStore = transaction.objectStore(deck);
-        const cursorQuery = objectStore.openCursor();
-        let cardsArray = [];
+        const transaction = db.transaction('cards', 'readonly');
+        const objectStore = transaction.objectStore('cards');
+        const locationIndex = objectStore.index('location');
 
-        cursorQuery.onsuccess = async () => {
-            let cursor = cursorQuery.result;
-            if (cursor) {
-                let card = cursor.value;
-                cardsArray.push(card);
-                cursor.continue();
+        let request = locationIndex.getAll(location);
+
+        request.onsuccess = async () => {
+            if (request.result !== undefined) {
+                resolve(request.result);
             } else {
-                resolve(cardsArray);
+                console.log(`No cards found for location ${location}.`);
             }
         };
     })
@@ -140,7 +137,7 @@ async function getDeckLength(deck) {
     return await queryDB(deck, 'readonly', 'count');
 };
 
-async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
+async function drawFromDeck(originDeck, destinationDeck, cardsQuantity, location) {
     const transaction = everdellDB.transaction([originDeck, destinationDeck], 'readwrite');
     const originStore = transaction.objectStore(originDeck);
     const destinationStore = transaction.objectStore(destinationDeck);
@@ -151,7 +148,7 @@ async function drawFromDeck(originDeck, destinationDeck, cardsQuantity) {
         let cursor = cursorQuery.result;
         if (cursor && cardsToDraw > 0) {
             let card = cursor.value;
-
+            card.location = location;
             let addRequest = destinationStore.add(card);
             addRequest.onsuccess = () => {
                 cursor.delete();

@@ -10,7 +10,7 @@ async function gameInit() {
             return populateMainDeck(db).then(()=> db);
         })
         .then(db => {
-            drawFromDeck('main-deck', 'meadow', 8);
+            drawFromDeck('main-deck', 'cards', 8, 'meadow');
             return db;
         })
         .catch(error => {
@@ -81,7 +81,6 @@ function renderPlayerHandWithListeners() {
 };
 
 async function renderMeadowWithListeners(db) {
-    console.log(db);
     let meadowArray = await getAllCards(db, 'meadow');
     renderCards(meadowArray, document.querySelector('#meadow .cards-grid'));
     document.querySelectorAll('#meadow .card').forEach(card => {
