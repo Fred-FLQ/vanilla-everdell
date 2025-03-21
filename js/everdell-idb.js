@@ -31,6 +31,9 @@ function openDB() {
             mainDeckStore.createIndex('id', 'id', { unique: true });
             const meadowStore = everdellDB.createObjectStore('meadow', { keyPath: 'id' });
             meadowStore.createIndex('id', 'id', { unique: true });
+            const handsStore = everdellDB.createObjectStore('hands', { keyPath: 'id' });
+            handsStore.createIndex('id', 'id', { unique: true });
+            handsStore.createIndex('owner', 'owner', { unique: false });
 
             console.log('Database structure created/updated.');
         };
@@ -113,9 +116,9 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 };
 
-function getAllCards(deck) {
+function getAllCards(db, deck) {
     return new Promise((resolve, reject) => {
-        const transaction = everdellDB.transaction(deck, 'readonly');
+        const transaction = db.transaction(deck, 'readonly');
         const objectStore = transaction.objectStore(deck);
         const cursorQuery = objectStore.openCursor();
         let cardsArray = [];
