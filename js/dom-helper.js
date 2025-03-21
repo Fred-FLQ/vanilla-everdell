@@ -5,19 +5,17 @@ import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLe
 
 async function gameInit() {
     await fetchCardsData();
-    openDB()
+    return openDB()
         .then(db => {
-            console.log('DB is ready, now populating...');
-            return populateMainDeck(db);
+            return populateMainDeck(db).then(()=> db);
         })
-        .then(()=>{
-            drawFromDeck('main-deck', 'meadow', 3);
+        .then(db => {
+            drawFromDeck('main-deck', 'meadow', 8);
+            return db;
         })
         .catch(error => {
             console.error('Failed to open DB:', error);
         });
-    // Place 8 random cards in meadow
-    gameState.meadow = drawRandomCards(8);
 
     // Player gets 2 workers
     gameState.player.workers = 2;
@@ -33,6 +31,7 @@ async function renderCounter(counterState, containerElem) {
     containerElem.textContent = counterState;
 };
 
+// IDB READY
 // Render cards in context
 async function renderCards(cardsArray, containerElem) {
     containerElem.innerHTML = ''; // Clear container before loading cards
@@ -40,14 +39,14 @@ async function renderCards(cardsArray, containerElem) {
     cardsArray.forEach(card => {
         const cardContainer = renderCardsElem.appendChild(document.createElement("article"));
         cardContainer.classList.add("card");
-        // Generate id element with card.id
+
         cardContainer.id = card.id;
 
         const cardCostHTML = Object.keys(card.cost)
             .map(ressource => {
                 return `<li>${ressource}: ${card.cost[ressource]}&nbsp;</li>`;
             })
-            .join(''); // Remove ','
+            .join('');
         card.produces = null; // Remove the "produces" part of the card for now
         cardContainer.innerHTML = `
             <header class="${card.category}">
@@ -81,10 +80,12 @@ function renderPlayerHandWithListeners() {
     });
 };
 
-function renderMeadowWithListeners() {
-    renderCards(gameState.meadow, document.querySelector('#meadow .cards-grid'));
+async function renderMeadowWithListeners(db) {
+    console.log(db);
+    let meadowArray = await getAllCards(db, 'meadow');
+    renderCards(meadowArray, document.querySelector('#meadow .cards-grid'));
     document.querySelectorAll('#meadow .card').forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.meadow);
+        card.onclick = () => playCard(card.id, meadowArray);
     })
 };
 
@@ -107,11 +108,11 @@ function showComputer() {
     })
 };
 
-gameInit().then(() => {
+gameInit().then(db => {
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
     workersWithListeners();
     renderPlayerHandWithListeners();
-    renderMeadowWithListeners();
+    renderMeadowWithListeners(db);
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
     showComputer();
 });
