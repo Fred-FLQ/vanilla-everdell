@@ -7,10 +7,11 @@ async function gameInit() {
     await fetchCardsData();
     return openDB()
         .then(db => {
-            return populateMainDeck(db).then(()=> db);
+            return populateMainDeck(db).then(() => db);
         })
         .then(db => {
             drawFromDeck('main-deck', 'cards', 8, 'meadow');
+            drawFromDeck('main-deck', 'cards', 5, 'p1-hand');
             return db;
         })
         .catch(error => {
@@ -19,9 +20,6 @@ async function gameInit() {
 
     // Player gets 2 workers
     gameState.player.workers = 2;
-
-    // Player draws 5 cards
-    gameState.player.hand = drawRandomCards(5);
 
 };
 
@@ -73,10 +71,11 @@ function workersWithListeners() {
     })
 };
 
-function renderPlayerHandWithListeners() {
-    renderCards(gameState.player.hand, document.querySelector('#player-hand .cards-grid'));
+async function renderPlayerHandWithListeners(db) {
+    let p1Array = await getAllCards(db, 'p1-hand');
+    renderCards(p1Array, document.querySelector('#player-hand .cards-grid'));
     document.querySelectorAll('#player-hand .card').forEach(card => {
-        card.onclick = () => playCard(card.id, gameState.player.hand);
+        card.onclick = () => playCard(card.id, p1Array);
     });
 };
 
@@ -110,7 +109,7 @@ function showComputer() {
 gameInit().then(db => {
     renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
     workersWithListeners();
-    renderPlayerHandWithListeners();
+    renderPlayerHandWithListeners(db);
     renderMeadowWithListeners(db);
     renderCards(gameState.computer.city, document.querySelector('#computer-area .cards-grid'));
     showComputer();
@@ -124,5 +123,3 @@ window.modifyResources = modifyResources;
 window.getCard = getCard;
 window.drawFromDeck = drawFromDeck;
 window.getDeckLength = getDeckLength;
-window.getAllCards = getAllCards;
-window.renderCards = renderCards;
