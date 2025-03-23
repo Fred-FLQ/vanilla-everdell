@@ -7,21 +7,21 @@ function openDB() {
     console.log('Trying to open DB...');
 
     return new Promise((resolve, reject) => {
-        const openRequest = window.indexedDB.open(DB_NAME, DB_VERSION);
+        const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
 
-        openRequest.onsuccess = (event) => {
+        openRequest.onsuccess = () => {
             console.log('Database opened successfully');
             everdellDB = openRequest.result;
             resolve(everdellDB);
         };
 
-        openRequest.onerror = (event) => {
-            console.error('Database failed to open: ' + event.target.errorCode);
-            reject(event.target.errorCode);
+        openRequest.onerror = () => {
+            console.error('Database failed to open: ' + openRequest.error);
+            reject(openRequest.error);
         };
 
-        openRequest.onupgradeneeded = (event) => {
-            everdellDB = event.target.result;
+        openRequest.onupgradeneeded = () => {
+            everdellDB = openRequest.result;
 
             for (const store of everdellDB.objectStoreNames) {
                 everdellDB.deleteObjectStore(store);
@@ -111,6 +111,7 @@ async function populateMainDeck(db) {
     };
 };
 
+// [STATUS] Need to be deprecated
 async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 };
@@ -135,6 +136,22 @@ function getAllCards(db, location) {
 
 async function getDeckLength(deck) {
     return await queryDB(deck, 'readonly', 'count');
+};
+
+// NEED TO START BACK HERE AND CONNECT WITH replenishMeadow() in cards-handling
+async function getLocationLength(location) {
+    if (!everdellDB) {
+        reject(new Error('Database not initialized.'));
+        return;
+    }
+    return new Promise((resolve, reject) => {
+        const index = everdellDB.transaction('cards', 'readonly').objectStore('cards').index('location');
+
+        let request = index.count(location);
+        
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    })
 };
 
 async function drawFromDeck(originDeck, destinationDeck, cardsQuantity, location) {
@@ -163,4 +180,4 @@ async function drawFromDeck(originDeck, destinationDeck, cardsQuantity, location
     cursorQuery.onerror = () => console.error(`Unable to draw from ${originDeck}.`);
 };
 
-export { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength };
+export { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength, getLocationLength };
