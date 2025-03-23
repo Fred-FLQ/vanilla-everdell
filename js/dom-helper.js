@@ -5,18 +5,11 @@ import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLe
 
 async function gameInit() {
     gameState.player.workers = 2;
-    return openDB()
-        .then(db => {
-            return populateMainDeck(db).then(() => db);
-        })
-        .then(db => {
-            drawFromDeck('main-deck', 'cards', 8, 'meadow');
-            drawFromDeck('main-deck', 'cards', 5, 'p1-hand');
-            return db;
-        })
-        .catch(error => {
-            console.error('Failed to open DB:', error);
-        });
+    await openDB();
+    await populateMainDeck();
+    drawFromDeck('main-deck', 'cards', 8, 'meadow');
+    drawFromDeck('main-deck', 'cards', 5, 'p1-hand');
+    drawFromDeck('main-deck', 'cards', 6, 'p1-city');
 };
 
 // Cards Rendering, updating and event listeners
@@ -68,8 +61,8 @@ function workersWithListeners() {
 };
 
 // [STATUS] IDB READY
-async function renderPlayerHandWithListeners(db) {
-    let p1Array = await getAllCards(db, 'p1-hand');
+async function renderPlayerHandWithListeners() {
+    let p1Array = await getAllCards('p1-hand');
     renderCards(p1Array, document.querySelector('#player-hand .cards-grid'));
     document.querySelectorAll('#player-hand .card').forEach(card => {
         card.onclick = () => playCard(card.id, p1Array);
@@ -77,8 +70,8 @@ async function renderPlayerHandWithListeners(db) {
 };
 
 // [STATUS] IDB READY
-async function renderMeadowWithListeners(db) {
-    let meadowArray = await getAllCards(db, 'meadow');
+async function renderMeadowWithListeners() {
+    let meadowArray = await getAllCards('meadow');
     renderCards(meadowArray, document.querySelector('#meadow .cards-grid'));
     document.querySelectorAll('#meadow .card').forEach(card => {
         card.onclick = () => playCard(card.id, meadowArray);
@@ -86,24 +79,24 @@ async function renderMeadowWithListeners(db) {
 };
 
 // [STATUS] IDB READY
-async function renderPlayerCity(db) {
+async function renderPlayerCity() {
     // let playerCity = await getAllCards(db, player +'-city'); // Version for multi player - to be improved
-    let playerCity = await getAllCards(db, 'p1-city');
+    let playerCity = await getAllCards('p1-city');
     renderCards(playerCity, document.querySelector('#player-city .cards-grid'));
 }
 
 // [STATUS] IDB READY
-async function renderCpuCity(db) {
-    let cpuCity = await getAllCards(db, 'cpu-city');
+async function renderCpuCity() {
+    let cpuCity = await getAllCards('cpu-city');
     renderCards(cpuCity, document.querySelector('#computer-area .cards-grid'));
 }
 
 // [STATUS] IDB READY
-function renderAllCards(db) {
-    renderPlayerHandWithListeners(db);
-    renderMeadowWithListeners(db);
-    renderPlayerCity(db);
-    renderCpuCity(db);
+function renderAllCards() {
+    renderPlayerHandWithListeners();
+    renderMeadowWithListeners();
+    renderPlayerCity();
+    renderCpuCity();
 };
 
 // [STATUS] IDB READY
@@ -119,14 +112,15 @@ function showComputer() {
     })
 };
 
-gameInit().then(db => {
-    renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-    workersWithListeners();
-    renderPlayerHandWithListeners(db);
-    renderMeadowWithListeners(db);
-    renderCpuCity(db);
-    showComputer();
-});
+gameInit()
+    .then(() => {
+        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
+        workersWithListeners();
+        renderPlayerHandWithListeners();
+        renderMeadowWithListeners();
+        renderCpuCity();
+        showComputer();
+    });
 
 export { renderAllCards, renderCounter };
 
