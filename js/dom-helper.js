@@ -1,7 +1,7 @@
 import { drawRandomCards } from './cards-handling.js';
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
 
 async function gameInit() {
     gameState.player.workers = 2;
@@ -17,7 +17,6 @@ async function gameInit() {
         .catch(error => {
             console.error('Failed to open DB:', error);
         });
-
 };
 
 // Cards Rendering, updating and event listeners
@@ -137,3 +136,4 @@ window.modifyResources = modifyResources;
 window.getCard = getCard;
 window.drawFromDeck = drawFromDeck;
 window.getDeckLength = getDeckLength;
+window.getLocationLength = getLocationLength;
