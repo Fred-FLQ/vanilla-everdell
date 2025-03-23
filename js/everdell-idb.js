@@ -74,7 +74,7 @@ function queryDB(storeName, mode, action, key = null, data = null) {
     });
 };
 
-async function populateMainDeck(db) {
+async function populateMainDeck() {
     try {
         const response = await fetch('./data/cards.json');
 
@@ -84,7 +84,7 @@ async function populateMainDeck(db) {
 
         const cardsJson = await response.json();
 
-        for (const store of db.objectStoreNames) {
+        for (const store of everdellDB.objectStoreNames) {
             await queryDB(store, 'readwrite', 'clear');
             console.log(`Cleared ${store} from old data.`)
         }
@@ -116,9 +116,9 @@ async function getCard(cardId) {
     return await queryDB('main-deck', 'readonly', 'get', cardId);
 };
 
-function getAllCards(db, location) {
+function getAllCards(location) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction('cards', 'readonly');
+        const transaction = everdellDB.transaction('cards', 'readonly');
         const objectStore = transaction.objectStore('cards');
         const locationIndex = objectStore.index('location');
 
