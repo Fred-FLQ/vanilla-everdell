@@ -36,7 +36,7 @@ const addCardToArea = (card, area) => {
 }
 
 // Replenish Meadow
-const replenishMeadow = () => {
+function replenishMeadow() {
     if (gameState.meadow.length < 8) {
         let newCard = drawRandomCards(1);
         newCard.forEach(card => addCardToArea(card, gameState.meadow));
