@@ -1,14 +1,14 @@
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
 
 async function gameInit() {
     gameState.player.workers = 2;
     await openDB();
     await populateMainDeck();
-    drawFromDeck('main-deck', 'cards', 8, 'meadow');
-    drawFromDeck('main-deck', 'cards', 5, 'p1-hand');
-    // drawFromDeck('main-deck', 'cards', 15, 'p1-city'); For testing city length
+    drawFromMainDeck(8, 'meadow');
+    drawFromMainDeck(5, 'p1-hand');
+    // drawFromMainDeck(15, 'p1-city'); For testing city length
 };
 
 // Cards Rendering, updating and event listeners
@@ -61,10 +61,10 @@ function workersWithListeners() {
 
 // [STATUS] IDB READY
 async function renderPlayerHandWithListeners() {
-    let p1Array = await getAllCards('p1-hand');
-    renderCards(p1Array, document.querySelector('#player-hand .cards-grid'));
+    let p1Hand = await getAllCards('p1-hand');
+    renderCards(p1Hand, document.querySelector('#player-hand .cards-grid'));
     document.querySelectorAll('#player-hand .card').forEach(card => {
-        card.onclick = () => playCard(card.id, p1Array);
+        card.onclick = () => playCard(card.id, p1Hand);
     });
 };
 
@@ -127,6 +127,6 @@ export { renderAllCards, renderCounter };
 window.gameState = gameState;
 window.modifyResources = modifyResources;
 window.getCard = getCard;
-window.drawFromDeck = drawFromDeck;
+window.drawFromMainDeck = drawFromMainDeck;
 window.getDeckLength = getDeckLength;
 window.getLocationLength = getLocationLength;

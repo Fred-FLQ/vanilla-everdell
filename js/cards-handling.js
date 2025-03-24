@@ -1,5 +1,5 @@
 import { gameState } from "./game-state.js";
-import { drawFromDeck, getDeckLength, getLocationLength } from "./everdell-idb.js";
+import { drawFromMainDeck, getDeckLength, getLocationLength } from "./everdell-idb.js";
 
 // Add cards to area
 const addCardToArea = (card, area) => {
@@ -9,7 +9,7 @@ const addCardToArea = (card, area) => {
 async function replenishMeadow() {
     let meadowLength = await getLocationLength('meadow');
     if (meadowLength < 8) {
-        await drawFromDeck('main-deck', 'cards', 1, 'meadow');
+        await drawFromMainDeck(1, 'meadow');
     }
 };
 

@@ -140,24 +140,20 @@ async function getDeckLength(deck) {
 
 // NEED TO START BACK HERE AND CONNECT WITH replenishMeadow() in cards-handling
 async function getLocationLength(location) {
-    if (!everdellDB) {
-        reject(new Error('Database not initialized.'));
-        return;
-    }
     return new Promise((resolve, reject) => {
         const index = everdellDB.transaction('cards', 'readonly').objectStore('cards').index('location');
 
         let request = index.count(location);
-        
+
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     })
 };
 
-async function drawFromDeck(originDeck, destinationDeck, cardsQuantity, location) {
-    const transaction = everdellDB.transaction([originDeck, destinationDeck], 'readwrite');
-    const originStore = transaction.objectStore(originDeck);
-    const destinationStore = transaction.objectStore(destinationDeck);
+async function drawFromMainDeck(cardsQuantity, location) {
+    const transaction = everdellDB.transaction(['main-deck', 'cards'], 'readwrite');
+    const originStore = transaction.objectStore('main-deck');
+    const destinationStore = transaction.objectStore('cards');
     const cursorQuery = originStore.openCursor();
     let cardsToDraw = cardsQuantity;
 
@@ -177,7 +173,7 @@ async function drawFromDeck(originDeck, destinationDeck, cardsQuantity, location
         }
     };
 
-    cursorQuery.onerror = () => console.error(`Unable to draw from ${originDeck}.`);
+    cursorQuery.onerror = () => console.error('Unable to draw from the main deck.');
 };
 
-export { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength, getLocationLength };
+export { openDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength };
