@@ -1,4 +1,3 @@
-import { drawRandomCards } from './cards-handling.js';
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
 import { openDB, populateMainDeck, getCard, getAllCards, drawFromDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
@@ -9,7 +8,7 @@ async function gameInit() {
     await populateMainDeck();
     drawFromDeck('main-deck', 'cards', 8, 'meadow');
     drawFromDeck('main-deck', 'cards', 5, 'p1-hand');
-    drawFromDeck('main-deck', 'cards', 6, 'p1-city');
+    // drawFromDeck('main-deck', 'cards', 15, 'p1-city'); For testing city length
 };
 
 // Cards Rendering, updating and event listeners
