@@ -1,5 +1,4 @@
 import { gameState } from "./game-state.js";
-import { addCardToArea, replenishMeadow } from "./cards-handling.js";
 import { renderCounter, renderAllCards } from "./dom-helper.js";
 import { queryDB, drawFromMainDeck, getLocationLength, getAllCards, changeCardLocation } from "./everdell-idb.js";
 
@@ -86,7 +85,14 @@ async function cpuPlaysCard() {
     let cpuRandomIndex = Math.floor(Math.random() * 8);
     let meadowCards = await getAllCards('meadow');
     let cpuNewCard = meadowCards[cpuRandomIndex];
-    return queryDB('cards', 'readwrite', 'put', null, {...cpuNewCard, location: 'cpu-city'});
+    return queryDB('cards', 'readwrite', 'put', null, { ...cpuNewCard, location: 'cpu-city' });
+};
+
+async function replenishMeadow() {
+    let meadowLength = await getLocationLength('meadow');
+    if (meadowLength < 8) {
+        await drawFromMainDeck(1, 'meadow');
+    }
 };
 
 async function playCard(cardID, cardsArray) {
@@ -97,7 +103,7 @@ async function playCard(cardID, cardsArray) {
         return;
     }
 
-    let p1City =  await getAllCards('p1-city');
+    let p1City = await getAllCards('p1-city');
 
     // Loop through cards array until match cardID = card.id
     const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
