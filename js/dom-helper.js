@@ -91,11 +91,11 @@ async function renderCpuCity() {
 }
 
 // [STATUS] IDB READY
-function renderAllCards() {
-    renderPlayerHandWithListeners();
-    renderMeadowWithListeners();
-    renderPlayerCity();
-    renderCpuCity();
+async function renderAllCards() {
+    await renderPlayerHandWithListeners();
+    await renderMeadowWithListeners();
+    await renderPlayerCity();
+    await renderCpuCity();
 };
 
 // [STATUS] IDB READY
@@ -130,3 +130,4 @@ window.getCard = getCard;
 window.drawFromMainDeck = drawFromMainDeck;
 window.getDeckLength = getDeckLength;
 window.getLocationLength = getLocationLength;
+window.renderAllCards = renderAllCards;
