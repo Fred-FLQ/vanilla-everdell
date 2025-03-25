@@ -16,11 +16,9 @@ function modifyResources(resource, amount) { // Quantity can be negative
     renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
 };
 
-// [TO DO] The 'location' term needs to be changed to something else <=> conflict with IDB stores index
-async function getResources(location) {
+async function getResources(spot) {
     let p1HandLength;
-    let newCards; // Need to declare it before hand because a switch statement does not create separate scopes for each case. 
-    switch (location) {
+    switch (spot) {
         case 'threeTwig':
             modifyResources('twig', 3);
             break;
@@ -67,15 +65,14 @@ async function getResources(location) {
     }
 };
 
-// [TO DO] The 'location' term needs to be changed to something else <=> conflict with IDB stores index
 // Players & computer actions
-async function placeWorker(location) {
+async function placeWorker(spot) {
     if (gameState.player.workers > 0) {
         gameState.player.workers -= 1;
-        gameState.basicActionSpaces[location] += 1;
+        gameState.basicActionSpaces[spot] += 1;
         renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-        renderCounter(gameState.basicActionSpaces[location], document.querySelector(`#${location} span`));
-        getResources(location);
+        renderCounter(gameState.basicActionSpaces[spot], document.querySelector(`#${spot} span`));
+        getResources(spot);
     } else {
         alert("You don't have any more workers.");
     }
