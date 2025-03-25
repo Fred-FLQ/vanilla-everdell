@@ -112,8 +112,8 @@ async function populateMainDeck() {
 };
 
 // [STATUS] Need to be deprecated
-async function getCard(cardId) {
-    return await queryDB('main-deck', 'readonly', 'get', cardId);
+function getCard(cardId) {
+    return queryDB('main-deck', 'readonly', 'get', cardId);
 };
 
 function getAllCards(location) {
@@ -134,12 +134,11 @@ function getAllCards(location) {
     })
 };
 
-async function getDeckLength(deck) {
-    return await queryDB(deck, 'readonly', 'count');
+function getDeckLength(deck) {
+    return queryDB(deck, 'readonly', 'count');
 };
 
-// NEED TO START BACK HERE AND CONNECT WITH replenishMeadow() in cards-handling
-async function getLocationLength(location) {
+function getLocationLength(location) {
     return new Promise((resolve, reject) => {
         const index = everdellDB.transaction('cards', 'readonly').objectStore('cards').index('location');
 
@@ -150,30 +149,40 @@ async function getLocationLength(location) {
     })
 };
 
-async function drawFromMainDeck(cardsQuantity, location) {
-    const transaction = everdellDB.transaction(['main-deck', 'cards'], 'readwrite');
-    const originStore = transaction.objectStore('main-deck');
-    const destinationStore = transaction.objectStore('cards');
-    const cursorQuery = originStore.openCursor();
-    let cardsToDraw = cardsQuantity;
+function drawFromMainDeck(cardsQuantity, location) {
+    return new Promise((resolve, reject) => {
+        const transaction = everdellDB.transaction(['main-deck', 'cards'], 'readwrite');
+        const originStore = transaction.objectStore('main-deck');
+        const destinationStore = transaction.objectStore('cards');
+        const cursorQuery = originStore.openCursor();
+        let cardsToDraw = cardsQuantity;
 
-    cursorQuery.onsuccess = () => {
-        let cursor = cursorQuery.result;
-        if (cursor && cardsToDraw > 0) {
-            let card = cursor.value;
-            card.location = location;
-            let addRequest = destinationStore.add(card);
-            addRequest.onsuccess = () => {
-                cursor.delete();
-                cardsToDraw--;
-                cursor.continue();
+        cursorQuery.onsuccess = () => {
+            let cursor = cursorQuery.result;
+            if (cursor && cardsToDraw > 0) {
+                let card = cursor.value;
+                card.location = location;
+                let addRequest = destinationStore.add(card);
+                addRequest.onsuccess = () => {
+                    cursor.delete();
+                    cardsToDraw--;
+                    cursor.continue();
+                }
+            } else {
+                console.log(`${cardsQuantity} cards successfully drawn.`);
+                resolve();
             }
-        } else {
-            console.log(`${cardsQuantity} cards successfully drawn.`);
-        }
-    };
+        };
 
-    cursorQuery.onerror = () => console.error('Unable to draw from the main deck.');
+        cursorQuery.onerror = () => {
+            console.error('Unable to draw from the main deck.');
+            reject(new Error('Unable to draw from the main deck.'));
+        };
+    });
 };
 
-export { openDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength };
+function changeCardLocation(card, newLocation) {
+    return queryDB('cards', 'readwrite', 'put', null, { ...card, location: newLocation });
+};
+
+export { openDB, queryDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
