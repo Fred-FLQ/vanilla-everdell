@@ -1,6 +1,6 @@
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
 
 async function gameInit() {
     gameState.player.workers = 2;
@@ -126,8 +126,6 @@ export { renderAllCards, renderCounter };
 // For testing
 window.gameState = gameState;
 window.modifyResources = modifyResources;
-window.getCard = getCard;
 window.drawFromMainDeck = drawFromMainDeck;
 window.getDeckLength = getDeckLength;
 window.getLocationLength = getLocationLength;
-window.renderAllCards = renderAllCards;

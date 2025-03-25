@@ -111,11 +111,6 @@ async function populateMainDeck() {
     };
 };
 
-// [STATUS] Need to be deprecated
-function getCard(cardId) {
-    return queryDB('main-deck', 'readonly', 'get', cardId);
-};
-
 function getAllCards(location) {
     return new Promise((resolve, reject) => {
         const transaction = everdellDB.transaction('cards', 'readonly');
@@ -134,6 +129,7 @@ function getAllCards(location) {
     })
 };
 
+// FOR TESTING ONLY - TO BE DEPRECATED
 function getDeckLength(deck) {
     return queryDB(deck, 'readonly', 'count');
 };
@@ -185,4 +181,4 @@ function changeCardLocation(card, newLocation) {
     return queryDB('cards', 'readwrite', 'put', null, { ...card, location: newLocation });
 };
 
-export { openDB, queryDB, populateMainDeck, getCard, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
+export { openDB, queryDB, populateMainDeck, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
