@@ -1,6 +1,7 @@
 import { gameState } from "./game-state.js";
-import { drawRandomCards, addCardToArea, replenishMeadow } from "./cards-handling.js";
+import { addCardToArea, replenishMeadow } from "./cards-handling.js";
 import { renderCounter, renderAllCards } from "./dom-helper.js";
+import { queryDB, drawFromMainDeck, getLocationLength, getAllCards, changeCardLocation } from "./everdell-idb.js";
 
 function addPoints(amount) {
     gameState.player.points += amount;
@@ -16,7 +17,9 @@ function modifyResources(resource, amount) { // Quantity can be negative
     renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
 };
 
+// [TO DO] The 'location' term needs to be changed to something else <=> conflict with IDB stores index
 async function getResources(location) {
+    let p1HandLength;
     let newCards; // Need to declare it before hand because a switch statement does not create separate scopes for each case. 
     switch (location) {
         case 'threeTwig':
@@ -24,23 +27,30 @@ async function getResources(location) {
             break;
         case 'twoTwigOneCard':
             modifyResources('twig', 2);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderAllCards();
+            p1HandLength = await getLocationLength('p1-hand');
+            p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
+            await renderAllCards();
             break;
         case 'twoResin':
             modifyResources('resin', 2);
             break;
         case 'oneResinOneCard':
             modifyResources('resin', 1);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderAllCards();
+            p1HandLength = await getLocationLength('p1-hand');
+            p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
+            await renderAllCards();
             break;
         case 'twoCardOnePoint':
-            newCards = drawRandomCards(2);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderAllCards();
+            p1HandLength = await getLocationLength('p1-hand');
+            if (p1HandLength === 7) {
+                await drawFromMainDeck(1, 'p1-hand');
+                alert('You can only draw 1 card.');
+            } else if (p1HandLength < 7) {
+                await drawFromMainDeck(2, 'p1-hand');
+            } else {
+                alert('Maximum of 8 cards in hand.');
+            }
+            await renderAllCards();
             addPoints(1);
             break;
         case 'onePebble':
@@ -48,9 +58,9 @@ async function getResources(location) {
             break;
         case 'oneBerryOneCard':
             modifyResources('berry', 1);
-            newCards = drawRandomCards(1);
-            newCards.forEach(card => gameState.player.hand.length < 8 ? gameState.player.hand.push(card) : alert('Maximum of 8 cards in hand.'));
-            renderAllCards();
+            p1HandLength = await getLocationLength('p1-hand');
+            p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
+            await renderAllCards();
             break;
         case 'oneBerry':
             modifyResources('berry', 1);
@@ -58,6 +68,7 @@ async function getResources(location) {
     }
 };
 
+// [TO DO] The 'location' term needs to be changed to something else <=> conflict with IDB stores index
 // Players & computer actions
 async function placeWorker(location) {
     if (gameState.player.workers > 0) {
@@ -71,25 +82,28 @@ async function placeWorker(location) {
     }
 };
 
-function cpuPlaysCard() {
-    let rugwortCardIndex = Math.floor(Math.random() * 8);
-    let rugwortNewCard = gameState.meadow.splice(rugwortCardIndex, 1);
-    rugwortNewCard.forEach(card => addCardToArea(card, gameState.computer.city));
-    replenishMeadow();
+async function cpuPlaysCard() {
+    let cpuRandomIndex = Math.floor(Math.random() * 8);
+    let meadowCards = await getAllCards('meadow');
+    let cpuNewCard = meadowCards[cpuRandomIndex];
+    return queryDB('cards', 'readwrite', 'put', null, {...cpuNewCard, location: 'cpu-city'});
 };
 
 async function playCard(cardID, cardsArray) {
     // Check how many cards in Player's city
-    if (gameState.player.city.length === 15) {
+    let p1CityLength = await getLocationLength('p1-city');
+    if (p1CityLength === 15) {
         alert('You have reached the maximum number of cards in your city.');
         return;
     }
+
+    let p1City =  await getAllCards('p1-city');
 
     // Loop through cards array until match cardID = card.id
     const selectedCard = cardsArray.find(card => card.id === cardID); // If true, returns matching card
 
     // If selected card is unique, check if already in city
-    if (selectedCard.unique && gameState.player.city.find(card => card.name === selectedCard.name)) {
+    if (selectedCard.unique && p1City.find(card => card.name === selectedCard.name)) {
         alert('You cannot have 2 unique identical cards.');
         return; // Exit if unique card already exists
     };
@@ -105,18 +119,17 @@ async function playCard(cardID, cardsArray) {
     };
 
     // Add played card to city and remove it from hand/meadow
-    addCardToArea(selectedCard, gameState.player.city);
-    const selectedCardIndex = cardsArray.indexOf(selectedCard);
-    cardsArray.splice(selectedCardIndex, 1);
+    await changeCardLocation(selectedCard, 'p1-city');
 
     // Draw card for meadow if necessary
-    replenishMeadow();
+    await replenishMeadow();
 
     // Rugwort plays a card automatically after the player
-    cpuPlaysCard();
+    await cpuPlaysCard();
+    await replenishMeadow();
 
     // Rendering
-    renderAllCards();
+    await renderAllCards();
 };
 
 export { addPoints, modifyResources, placeWorker, playCard };
