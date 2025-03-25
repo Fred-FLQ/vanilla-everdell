@@ -6,20 +6,19 @@ async function gameInit() {
     gameState.player.workers = 2;
     await openDB();
     await populateMainDeck();
-    drawFromMainDeck(8, 'meadow');
-    drawFromMainDeck(5, 'p1-hand');
+    await drawFromMainDeck(8, 'meadow');
+    await drawFromMainDeck(5, 'p1-hand');
     // drawFromMainDeck(15, 'p1-city'); For testing city length
 };
 
 // Cards Rendering, updating and event listeners
 // Render counters
-// [CHECK] THIS ONE: why async?
-async function renderCounter(counterState, containerElem) {
+function renderCounter(counterState, containerElem) {
     containerElem.textContent = counterState;
 };
 
 // [STATUS] IDB READY
-async function renderCards(cardsArray, containerElem) {
+function renderCards(cardsArray, containerElem) {
     containerElem.innerHTML = ''; // Clear container before loading cards
     const renderCardsElem = containerElem;
     cardsArray.forEach(card => {
@@ -115,9 +114,7 @@ gameInit()
     .then(() => {
         renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
         workersWithListeners();
-        renderPlayerHandWithListeners();
-        renderMeadowWithListeners();
-        renderCpuCity();
+        renderAllCards();
         showComputer();
     });
 

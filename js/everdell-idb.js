@@ -34,6 +34,8 @@ function openDB() {
             cardsStore.createIndex('location', 'location', { unique: false });
 
             console.log('Database structure created/updated.');
+
+            everdellDB.onversionchange = () => everdellDB.close();
         };
     });
 
@@ -70,7 +72,13 @@ function queryDB(storeName, mode, action, key = null, data = null) {
         }
 
         query.onerror = () => reject('Failed to query database.');
-        query.onsuccess = () => resolve(query.result);
+        query.onsuccess = () => {
+            if (query.result === undefined && action === 'get') {
+                reject(new Error(`No result found for key: ${key}`));
+            } else {
+                resolve(query.result);
+            }
+        };
     });
 };
 
@@ -126,6 +134,11 @@ function getAllCards(location) {
                 console.log(`No cards found for location ${location}.`);
             }
         };
+
+        request.onerror = () => {
+            console.error(`Error retrieving cards for location: ${location}`);
+            reject(request.error);
+        };
     })
 };
 
@@ -134,6 +147,7 @@ function getDeckLength(deck) {
     return queryDB(deck, 'readonly', 'count');
 };
 
+// NOTE: might not be useful, can just getAllCards() and use resulting array.length
 function getLocationLength(location) {
     return new Promise((resolve, reject) => {
         const index = everdellDB.transaction('cards', 'readonly').objectStore('cards').index('location');
@@ -163,7 +177,7 @@ function drawFromMainDeck(cardsQuantity, location) {
                     cursor.delete();
                     cardsToDraw--;
                     cursor.continue();
-                }
+                };
             } else {
                 console.log(`${cardsQuantity} cards successfully drawn.`);
                 resolve();
