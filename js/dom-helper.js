@@ -1,12 +1,13 @@
 import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
-import { openDB, populateMainDeck, populateActionSpaces, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
+import { openDB, populateMainDeck, populateActionSpaces, populatePlayers, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength } from './everdell-idb.js';
 
 async function gameInit() {
     gameState.player.workers = 2;
     await openDB();
     await populateMainDeck();
     await populateActionSpaces();
+    await populatePlayers();
     await drawFromMainDeck(8, 'meadow');
     await drawFromMainDeck(5, 'p1-hand');
     // drawFromMainDeck(15, 'p1-city'); For testing city length
