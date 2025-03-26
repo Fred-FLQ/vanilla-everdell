@@ -134,11 +134,11 @@ async function populateActionSpaces() {
         const actionSpacesJson = await response.json();
         
         const putPromises = [];
-        for (let i = 0; i < actionSpacesJson.length; i++) {
+        for (const actionSpace of actionSpacesJson) {
             putPromises.push(
                 queryDB('action-spaces', 'readwrite', 'put', null, {
                     workersQuantity: 0,
-                    ...actionSpacesJson[i]
+                    ...actionSpace
                 })
             );
         }
@@ -147,6 +147,29 @@ async function populateActionSpaces() {
     } catch(error) {
         console.error('Error when populating action spaces data', error);
     };
+};
+
+async function populatePlayers() {
+    let players = ['cpu', 'p1', 'p2', 'p3', 'p4'];
+
+    const putPromises = [];
+    for (const player of players) {
+        putPromises.push(
+            queryDB('players', 'readwrite', 'put', null, {
+                owner: player,
+                workers: 2,
+                resources: {
+                    twig: 0,
+                    resin: 0,
+                    pebble: 0,
+                    berry: 0
+                },
+                points: 0
+            })
+        );
+    }
+
+    await Promise.allSettled(putPromises);
 };
 
 function getAllCards(location) {
@@ -225,4 +248,4 @@ function changeCardLocation(card, newLocation) {
     return queryDB('cards', 'readwrite', 'put', null, { ...card, location: newLocation });
 };
 
-export { openDB, queryDB, populateMainDeck, populateActionSpaces, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
+export { openDB, queryDB, populateMainDeck, populateActionSpaces, populatePlayers, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
