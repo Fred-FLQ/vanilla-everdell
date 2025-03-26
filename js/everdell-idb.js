@@ -1,5 +1,5 @@
 const DB_NAME = 'everdell_DB';
-const DB_VERSION = 7;
+const DB_VERSION = 9;
 
 let everdellDB;
 
@@ -29,9 +29,16 @@ function openDB() {
 
             const mainDeckStore = everdellDB.createObjectStore('main-deck', { keyPath: 'id' });
             mainDeckStore.createIndex('id', 'id', { unique: true });
+
             const cardsStore = everdellDB.createObjectStore('cards', { keyPath: 'id' });
             cardsStore.createIndex('id', 'id', { unique: true });
             cardsStore.createIndex('location', 'location', { unique: false });
+
+            const playersStore = everdellDB.createObjectStore('players', { keyPath: 'owner' });
+            playersStore.createIndex('owner', 'owner', { unique: true });
+
+            const actionSpacesStore = everdellDB.createObjectStore('action-spaces', { keyPath: 'spaceId' });
+            actionSpacesStore.createIndex('spaceId', 'spaceId', { unique: true });
 
             console.log('Database structure created/updated.');
 
@@ -86,12 +93,11 @@ async function populateMainDeck() {
     try {
         const response = await fetch('./data/cards.json');
 
-        if (!response.ok) {
-            throw new Error('Fetching from json failed.');
-        }
+        if (!response.ok) throw new Error('Fetching cards from json failed.');
 
         const cardsJson = await response.json();
 
+        // [TO DO] New stores added - need to refactor that later
         for (const store of everdellDB.objectStoreNames) {
             await queryDB(store, 'readwrite', 'clear');
             console.log(`Cleared ${store} from old data.`)
@@ -115,7 +121,31 @@ async function populateMainDeck() {
         console.log('Store populated successfully.');
 
     } catch (error) {
-        console.error("Error when populating main deck:", error);
+        console.error('Error when populating main deck:', error);
+    };
+};
+
+async function populateActionSpaces() {
+    try {
+        const response = await fetch('./data/action-spaces.json');
+
+        if (!response.ok) throw new Error('Fetching action spaces from json failed.');
+
+        const actionSpacesJson = await response.json();
+        
+        const putPromises = [];
+        for (let i = 0; i < actionSpacesJson.length; i++) {
+            putPromises.push(
+                queryDB('action-spaces', 'readwrite', 'put', null, {
+                    workersQuantity: 0,
+                    ...actionSpacesJson[i]
+                })
+            );
+        }
+
+        await Promise.allSettled(putPromises);
+    } catch(error) {
+        console.error('Error when populating action spaces data', error);
     };
 };
 
@@ -195,4 +225,4 @@ function changeCardLocation(card, newLocation) {
     return queryDB('cards', 'readwrite', 'put', null, { ...card, location: newLocation });
 };
 
-export { openDB, queryDB, populateMainDeck, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
+export { openDB, queryDB, populateMainDeck, populateActionSpaces, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, changeCardLocation };
