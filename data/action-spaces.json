@@ -1,0 +1,86 @@
+[
+    {
+        "spaceId": "threeTwig",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "twoTwigOneCard",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "twoResin",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "oneResinOneCard",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "twoCardOnePoint",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "onePebble",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "oneBerryOneCard",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "oneBerry",
+        "type": "basic",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "forest_threeBerry",
+        "type": "forest",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "forest_twoResinOneCard",
+        "type": "forest",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "forest_onePebbleOneCardOneBerry",
+        "type": "forest",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "forest_twoTwigTwoResin",
+        "type": "forest",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "forest_twoCardOneTwigOneBerry",
+        "type": "forest",
+        "exclusive": true,
+        "occupiedBy": []
+    },
+    {
+        "spaceId": "haven",
+        "type": "special",
+        "exclusive": false,
+        "occupiedBy": []
+    }
+]
