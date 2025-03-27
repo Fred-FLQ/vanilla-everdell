@@ -2,9 +2,16 @@ import { gameState } from "./game-state.js";
 import { renderCounter, renderAllCards } from "./dom-helper.js";
 import { queryDB, drawFromMainDeck, getLocationLength, getAllCards, changeCardLocation } from "./everdell-idb.js";
 
-function addPoints(amount) {
-    gameState.player.points += amount;
-    renderCounter(gameState.player.points, document.querySelector('#player-points span'));
+async function addPoints(player, amount) {
+    let playerData = await queryDB('players', 'readonly', 'get', player);
+
+    if (!playerData) throw new Error(`Player ${player} data not found.`);
+
+    playerData.points += amount;
+    await queryDB('players', 'readwrite', 'put', null, playerData);
+
+    // Only handles single mode: player VS cpu
+    renderCounter(playerData.points, document.querySelector('#player-points span'));
 };
 
 function hasEnoughResources(card) {
@@ -131,4 +138,4 @@ async function playCard(cardID, cardsArray) {
     await renderAllCards();
 };
 
-export { addPoints, modifyResources, placeWorker, playCard };
+export { modifyResources, placeWorker, playCard };
