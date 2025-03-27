@@ -78,11 +78,15 @@ async function getResources(spot) {
 
 // Players & computer actions
 async function placeWorker(spot) {
-    if (gameState.player.workers > 0) {
-        gameState.player.workers -= 1;
-        gameState.basicActionSpaces[spot] += 1;
-        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
-        renderCounter(gameState.basicActionSpaces[spot], document.querySelector(`#${spot} span`));
+    let playerData = await queryDB('players', 'readonly', 'get', 'p1'); // [TO DO] Refactor needed for multiplayer
+    if (playerData.workers > 0) {
+        playerData.workers -= 1;
+        await queryDB('players', 'readwrite', 'put', 'p1', playerData); // [TO DO] Refactor needed for multiplayer
+        let spotData = await queryDB('action-spaces', 'readonly', 'get', spot);
+        spotData.workersQuantity ++;
+        await queryDB('action-spaces', 'readwrite', 'put', spot, spotData);
+        renderCounter(playerData.workers, document.querySelector('#player-workers span'));
+        renderCounter(spotData.workersQuantity, document.querySelector(`#${spot} span`));
         getResources(spot);
     } else {
         alert("You don't have any more workers.");
