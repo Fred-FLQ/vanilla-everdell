@@ -8,9 +8,9 @@ async function addPoints(player, amount) {
     if (!playerData) throw new Error(`Player ${player} data not found.`);
 
     playerData.points += amount;
-    await queryDB('players', 'readwrite', 'put', null, playerData);
+    await queryDB('players', 'readwrite', 'put', player, playerData);
 
-    // Only handles single mode: player VS cpu
+     // [TO DO] Refactor needed for multiplayer
     renderCounter(playerData.points, document.querySelector('#player-points span'));
 };
 
@@ -57,7 +57,7 @@ async function getResources(spot) {
                 alert('Maximum of 8 cards in hand.');
             }
             needsRender = true;
-            addPoints(1);
+            addPoints('p1', 1);  // [TO DO] Refactor needed for multiplayer
             break;
         case 'onePebble':
             modifyResources('pebble', 1);
@@ -79,12 +79,15 @@ async function getResources(spot) {
 // Players & computer actions
 async function placeWorker(spot) {
     let playerData = await queryDB('players', 'readonly', 'get', 'p1'); // [TO DO] Refactor needed for multiplayer
+
     if (playerData.workers > 0) {
         playerData.workers -= 1;
         await queryDB('players', 'readwrite', 'put', 'p1', playerData); // [TO DO] Refactor needed for multiplayer
+        
         let spotData = await queryDB('action-spaces', 'readonly', 'get', spot);
-        spotData.workersQuantity ++;
+        spotData.workersQuantity++;
         await queryDB('action-spaces', 'readwrite', 'put', spot, spotData);
+        
         renderCounter(playerData.workers, document.querySelector('#player-workers span'));
         renderCounter(spotData.workersQuantity, document.querySelector(`#${spot} span`));
         getResources(spot);
