@@ -1,4 +1,3 @@
-import { gameState } from "./game-state.js";
 import { renderCounter, renderAllCards } from "./dom-helper.js";
 import { queryDB, drawFromMainDeck, getLocationLength, getAllCards, changeCardLocation } from "./everdell-idb.js";
 
@@ -14,13 +13,20 @@ async function addPoints(player, amount) {
     renderCounter(playerData.points, document.querySelector('#player-points span'));
 };
 
-function hasEnoughResources(card) {
-    return Object.keys(card.cost).every(resource => gameState.player.resources[resource] >= card.cost[resource]);
+async function hasEnoughResources(card) {
+    let playerData = await queryDB('players', 'readonly', 'get', 'p1'); // [TO DO] Refactor needed for multiplayer
+
+    if (!playerData) throw new Error(`Player data not found.`);
+    return Object.keys(card.cost).every(resource => playerData.resources[resource] >= card.cost[resource]);
 };
 
-function modifyResources(resource, amount) { // Quantity can be negative
-    gameState.player.resources[resource] += amount;
-    renderCounter(gameState.player.resources[resource], document.querySelector(`#${resource} span`));
+async function modifyResources(resource, amount) { // Quantity can be negative
+    let playerData = await queryDB('players', 'readonly', 'get', 'p1'); // [TO DO] Refactor needed for multiplayer
+    if (!playerData) throw new Error('Player data not found.');
+
+    playerData.resources[resource] += amount;
+    await queryDB('players', 'readwrite', 'put', 'p1', playerData);  // [TO DO] Refactor needed for multiplayer
+    renderCounter(playerData.resources[resource], document.querySelector(`#${resource} span`));
 };
 
 async function getResources(spot) {
@@ -29,19 +35,19 @@ async function getResources(spot) {
 
     switch (spot) {
         case 'threeTwig':
-            modifyResources('twig', 3);
+            await modifyResources('twig', 3);
             break;
         case 'twoTwigOneCard':
-            modifyResources('twig', 2);
+            await modifyResources('twig', 2);
             p1HandLength = await getLocationLength('p1-hand');
             p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
             needsRender = true;
             break;
         case 'twoResin':
-            modifyResources('resin', 2);
+            await modifyResources('resin', 2);
             break;
         case 'oneResinOneCard':
-            modifyResources('resin', 1);
+            await modifyResources('resin', 1);
             p1HandLength = await getLocationLength('p1-hand');
             p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
             needsRender = true;
@@ -60,16 +66,16 @@ async function getResources(spot) {
             addPoints('p1', 1);  // [TO DO] Refactor needed for multiplayer
             break;
         case 'onePebble':
-            modifyResources('pebble', 1);
+            await modifyResources('pebble', 1);
             break;
         case 'oneBerryOneCard':
-            modifyResources('berry', 1);
+            await modifyResources('berry', 1);
             p1HandLength = await getLocationLength('p1-hand');
             p1HandLength < 8 ? await drawFromMainDeck(1, 'p1-hand') : alert('Maximum of 8 cards in hand.');
             needsRender = true;
             break;
         case 'oneBerry':
-            modifyResources('berry', 1);
+            await modifyResources('berry', 1);
             break;
     }
 
@@ -90,7 +96,7 @@ async function placeWorker(spot) {
         
         renderCounter(playerData.workers, document.querySelector('#player-workers span'));
         renderCounter(spotData.workersQuantity, document.querySelector(`#${spot} span`));
-        getResources(spot);
+        await getResources(spot);
     } else {
         alert("You don't have any more workers.");
     }
@@ -133,8 +139,8 @@ async function playCard(cardID, cardsArray) {
         alert('Not enough resources to play this card.');
         return;
     } else {
-        Object.keys(selectedCard.cost).forEach(resource => {
-            modifyResources(resource, -selectedCard.cost[resource]);
+        Object.keys(selectedCard.cost).forEach(async resource => {
+            await modifyResources(resource, -selectedCard.cost[resource]);
         });
     };
 
