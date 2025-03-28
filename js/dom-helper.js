@@ -1,4 +1,3 @@
-import { gameState } from './game-state.js';
 import { modifyResources, placeWorker, playCard } from './game-mechanics.js';
 import { openDB, populateMainDeck, populateActionSpaces, populatePlayers, getAllCards, drawFromMainDeck, getDeckLength, getLocationLength, queryDB } from './everdell-idb.js';
 
@@ -9,7 +8,8 @@ async function gameInit() {
     await populatePlayers();
     await drawFromMainDeck(8, 'meadow');
     await drawFromMainDeck(5, 'p1-hand');
-    // drawFromMainDeck(15, 'p1-city'); For testing city length
+    let playerData = await queryDB('players', 'readonly', 'get', 'p1');
+    return playerData;
 };
 
 // Cards Rendering, updating and event listeners
@@ -112,8 +112,8 @@ function showComputer() {
 };
 
 gameInit()
-    .then(() => {
-        renderCounter(gameState.player.workers, document.querySelector('#player-workers span'));
+    .then((playerData) => {
+        renderCounter(playerData.workers, document.querySelector('#player-workers span'));
         workersWithListeners();
         renderAllCards();
         showComputer();
@@ -122,7 +122,6 @@ gameInit()
 export { renderAllCards, renderCounter };
 
 // For testing
-window.gameState = gameState;
 window.modifyResources = modifyResources;
 window.drawFromMainDeck = drawFromMainDeck;
 window.getDeckLength = getDeckLength;
